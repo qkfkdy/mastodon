@@ -15,7 +15,8 @@ defaults: &defaults
   timeline_preview: true
   show_staff_badge: true
   preview_sensitive_media: false
-  noindex: false
+  noindex: true
+  #검색엔진 미포함 기능
   theme: 'system'
   trends: true
   trends_as_landing_page: true
@@ -47,3 +48,5 @@ test:
 
 production:
   <<: *defaults
+  limited_federation_mode: true
+  #연합우주 제한
