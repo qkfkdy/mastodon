@@ -1,0 +1,35 @@
+@font-face {
+  font-family: mastodon-font-sans-serif;
+  src:
+    local('Pretendard Bold'),
+    url('../fonts/pretendard/Pretendard-Bold.woff2') format('woff2'),
+    url('../fonts/pretendard/Pretendard-Bold.woff') format('woff'),
+    url('../fonts/pretendard/Pretendard-Bold.ttf') format('truetype'),
+  font-weight: bold;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: mastodon-font-sans-serif;
+  src:
+    local('Pretendard Medm'),
+    url('../fonts/pretendard/Pretendard-Medium.woff2') format('woff2'),
+    url('../fonts/pretendard/Pretendard-Medium.woff') format('woff'),
+    url('../fonts/pretendard/Pretendard-Medium.ttf') format('truetype'),
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: mastodon-font-sans-serif;
+  src:
+    local('Pretendard'),
+    url('../fonts/pretendard/Pretendard-Regular.woff2') format('woff2'),
+    url('../fonts/pretendard/Pretendard-Regular.woff') format('woff'),
+    url('../fonts/pretendard/Pretendard-Regular.ttf') format('truetype'),
+  font-weight: normal;
+  font-display: swap;
+  font-style: normal;
+}
