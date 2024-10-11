@@ -59,6 +59,9 @@ services:
   web:
     # You can uncomment the following line if you want to not use the prebuilt image, for example if you have local code changes
     # build: .
+    environment:
+      ES_ENABLED: 'true'
+      ES_HOST: 'elasticsearch'
     image: ghcr.io/mastodon/mastodon:v4.3.0
     restart: always
     env_file: .env.production
