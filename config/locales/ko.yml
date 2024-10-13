@@ -1787,6 +1787,10 @@ ko:
     contrast: 마스토돈 (고대비)
     default: 마스토돈 (어두움)
     mastodon-light: 마스토돈 (밝음)
+    bird-ui-light: 트위터 테마 (밝음)
+    bird-ui-dark: 트위터 테마 (밝음)
+    theme-ui-dark: 전용 테마 (어두움)
+    theme-ui-light: 전용 테마 (어두움)
     system: 자동 (시스템 테마 사용)
   time:
     formats:
