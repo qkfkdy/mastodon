@@ -5,6 +5,13 @@
   color: $highlight-text-color;
 }
 
+body {
+  background-image: url('../images/theme/bg_light.png');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center bottom;;
+}
+
 .status-card__actions button,
 .status-card__actions a {
   color: rgba($white, 0.8);
