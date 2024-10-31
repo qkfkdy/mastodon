@@ -2716,7 +2716,7 @@ a.account__display-name {
 .columns-area {
   display: flex;
   flex: 1 1 auto;
-  background-color: hsl(110deg, 0%, 100%,.6);
+  background-color: hsl(110deg, 0%, 100%,.75);
   flex-direction: row;
   justify-content: flex-start;
   overflow-x: auto;
@@ -2834,7 +2834,7 @@ $ui-header-logo-wordmark-width: 99px;
 }
 
 .tabs-bar__wrapper {
-  background: var(--background-color);
+  background: hsl(110deg, 0%, 100%,1);
   backdrop-filter: var(--background-filter);
   position: sticky;
   top: $ui-header-height;
