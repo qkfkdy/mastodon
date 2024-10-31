@@ -2716,6 +2716,7 @@ a.account__display-name {
 .columns-area {
   display: flex;
   flex: 1 1 auto;
+  background-color: hsl(110deg, 0%, 100%,.6);
   flex-direction: row;
   justify-content: flex-start;
   overflow-x: auto;
