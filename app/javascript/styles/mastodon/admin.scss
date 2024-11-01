@@ -35,7 +35,7 @@ $content-width: 840px;
     width: $sidebar-width;
     padding: 0;
     pointer-events: auto;
-    background-color: darken($white, 100%);
+    background-color: var(--dropdown-background-color);
 
     &__toggle {
       display: none;
@@ -181,7 +181,7 @@ $content-width: 840px;
     padding-bottom: 20px;
     padding-inline-start: 25px;
     padding-inline-end: 15px;
-    background-color: darken($white, 75%);
+    background-color: var(--background-color-tint);
 
     @media screen and (max-width: $no-columns-breakpoint) {
       max-width: none;
