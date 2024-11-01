@@ -2716,7 +2716,7 @@ a.account__display-name {
 .columns-area {
   display: flex;
   flex: 1 1 auto;
-  background-color: darken($white, 75%);
+  background-color: var(--background-color-tint);
   flex-direction: row;
   justify-content: flex-start;
   overflow-x: auto;
@@ -4443,7 +4443,7 @@ a.status-card {
 .column-header {
   display: flex;
   font-size: 16px;
-  background: darken($white, 100%);
+  background: var(--dropdown-background-color);
   border: 1px solid var(--background-border-color);
   border-radius: 4px 4px 0 0;
   flex: 0 0 auto;
