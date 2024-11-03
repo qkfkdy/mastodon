@@ -462,7 +462,7 @@ body {
 .emoji-mart-search input,
 .language-dropdown__dropdown .emoji-mart-search input,
 .poll__option input[type='text'] {
-  background: darken($ui-base-color, 10%);
+  background: var(--customcolor);
 }
 
 .inline-follow-suggestions {
