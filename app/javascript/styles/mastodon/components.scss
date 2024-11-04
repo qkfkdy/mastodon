@@ -1157,10 +1157,8 @@ body > [data-popper-placement] {
     line-height: 20px;
     letter-spacing: 0.25px;
     display: -webkit-box;
-    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     padding: 0;
-    max-height: 4 * 20px;
     overflow: hidden;
     color: $darker-text-color;
   }
