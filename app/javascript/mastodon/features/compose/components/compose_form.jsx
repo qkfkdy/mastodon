@@ -70,6 +70,10 @@ class ComposeForm extends ImmutablePureComponent {
     lang: PropTypes.string,
     maxChars: PropTypes.number,
   };
+  state = {
+    highlighted: false,
+    savedText: localStorage.getItem('savedText') || '',  // 로컬 저장소에서 임시 저장된 텍스트 불러오기
+  };
 
   static defaultProps = {
     autoFocus: false,
@@ -85,7 +89,16 @@ class ComposeForm extends ImmutablePureComponent {
   }
 
   handleChange = (e) => {
-    this.props.onChange(e.target.value);
+    const newText = e.target.value;
+    this.props.onChange(newText);
+    if (newText.trim() === '') {
+      // 텍스트가 비었으면 로컬 저장소에서 삭제
+      localStorage.removeItem('savedText');
+    } else {
+      localStorage.setItem('savedText', newText); // 텍스트가 있을 때만 로컬 저장소에 저장
+    }
+
+    this.setState({ savedText: newText });
   };
 
   handleKeyDown = (e) => {
@@ -108,8 +121,6 @@ class ComposeForm extends ImmutablePureComponent {
 
   handleSubmit = (e) => {
     if (this.props.text !== this.textareaRef.current.value) {
-      // Something changed the text inside the textarea (e.g. browser extensions like Grammarly)
-      // Update the state to match the current text
       this.props.onChange(this.textareaRef.current.value);
     }
 
@@ -118,7 +129,7 @@ class ComposeForm extends ImmutablePureComponent {
     }
 
     this.props.onSubmit();
-
+    localStorage.removeItem('savedText'); // 제출 후 텍스트 삭제
     if (e) {
       e.preventDefault();
     }
@@ -153,8 +164,10 @@ class ComposeForm extends ImmutablePureComponent {
     }
   };
 
-  componentDidMount () {
-    this._updateFocusAndSelection({ });
+  componentDidMount() {
+    const savedText = localStorage.getItem('savedText') || '';
+    this.setState({ savedText });  // 초기화 시 로컬 저장소의 텍스트만 불러오기
+    this._updateFocusAndSelection({});
   }
 
   componentWillUnmount () {
@@ -222,8 +235,8 @@ class ComposeForm extends ImmutablePureComponent {
   };
 
   render () {
-    const { intl, onPaste, autoFocus, withoutNavigation, maxChars } = this.props;
-    const { highlighted } = this.state;
+    const { intl, onPaste, autoFocus, withoutNavigation, maxChars } = this.props;  // 여기서 지운 부분을 다시 추가
+    const { highlighted, savedText } = this.state; // 한 번에 구조 분해 할당
     const disabled = this.props.isSubmitting;
 
     return (
@@ -266,7 +279,7 @@ class ComposeForm extends ImmutablePureComponent {
               ref={this.textareaRef}
               placeholder={intl.formatMessage(messages.placeholder)}
               disabled={disabled}
-              value={this.props.text}
+              value={savedText || this.props.text}
               onChange={this.handleChange}
               suggestions={this.props.suggestions}
               onFocus={this.handleFocus}
@@ -277,6 +290,7 @@ class ComposeForm extends ImmutablePureComponent {
               onPaste={onPaste}
               autoFocus={autoFocus}
               lang={this.props.lang}
+              size={(savedText && savedText.size) || (this.props.text && this.props.text.size) || 0}  // undefined 처리
             />
           </div>
 
