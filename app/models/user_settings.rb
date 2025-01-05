@@ -8,42 +8,41 @@ class UserSettings
   include UserSettings::Glue
 
   setting :always_send_emails, default: false
-  setting :aggregate_reblogs, default: true
+  setting :aggregate_reblogs, default: false
   setting :theme, default: -> { ::Setting.theme }
-  setting :noindex, default: -> { ::Setting.noindex }
-  setting :show_application, default: true
+  setting :noindex, default: true
+  setting :indexable, default:  false
+  setting :show_application, default: false
   setting :default_language, default: nil
   setting :default_sensitive, default: false
   setting :default_privacy, default: nil, in: %w(public unlisted private)
 
-  setting_inverse_alias :indexable, :noindex
-
   namespace :web do
     setting :advanced_layout, default: false
-    setting :trends, default: true
+    setting :trends, default: false
     setting :use_blurhash, default: true
     setting :use_pending_items, default: false
     setting :use_system_font, default: false
     setting :disable_swiping, default: false
     setting :disable_hover_cards, default: false
     setting :delete_modal, default: true
-    setting :reblog_modal, default: false
+    setting :reblog_modal, default: true
     setting :reduce_motion, default: false
     setting :expand_content_warnings, default: false
     setting :display_media, default: 'default', in: %w(default show_all hide_all)
-    setting :auto_play, default: false
+    setting :auto_play, default: true
   end
 
   namespace :notification_emails do
-    setting :follow, default: true
+    setting :follow, default: false
     setting :reblog, default: false
     setting :favourite, default: false
-    setting :mention, default: true
-    setting :follow_request, default: true
-    setting :report, default: true
-    setting :pending_account, default: true
-    setting :trends, default: true
-    setting :appeal, default: true
+    setting :mention, default: false
+    setting :follow_request, default: false
+    setting :report, default: false
+    setting :pending_account, default: false
+    setting :trends, default: false
+    setting :appeal, default: false
     setting :software_updates, default: 'critical', in: %w(none critical patch all)
   end
 
