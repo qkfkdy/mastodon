@@ -1043,7 +1043,7 @@ ko:
     remove: 별칭 연결 끊기
   appearance:
     advanced_web_interface: 고급 웹 인터페이스
-    advanced_web_interface_hint: '화면의 가로폭을 가득 채우고 싶다면, 고급 웹 인터페이스는 한 번에 여러 정보를 볼 수 있도록 여러 컬럼을 설정할 수 있도록 합니다: 홈, 알림, 연합타임라인, 리스트, 해시태그 등'
+    advanced_web_interface_hint: '트윗덱과 같이 가로로 여러 화면이 펼쳐집니다. 추천하지 않습니다.'
     animations_and_accessibility: 애니메이션과 접근성
     confirmation_dialogs: 확인 대화상자
     discovery: 발견하기
@@ -1132,12 +1132,12 @@ ko:
       new_confirmation_instructions_sent: 확인 링크가 담긴 이메일이 몇 분 안에 도착할것입니다!
       title: 수신함 확인하기
     sign_in:
-      preamble_html: "<strong>%{domain}</strong>의 계정 정보를 이용해 로그인 하세요. 만약 내 계정이 다른 서버에 존재한다면, 여기서는 로그인 할 수 없습니다."
-      title: "%{domain}에 로그인"
+      preamble_html: "가입한 이메일 계정으로 로그인합니다. (아이디x)"
+      title: "드뤼아스의 아이들 : 로그인"
     sign_up:
       manual_review: "%{domain} 가입은 중재자들의 심사를 거쳐 진행됩니다. 가입 절차를 원활하게 하기 위해, 간단한 자기소개와 왜 %{domain}에 계정을 만들려고 하는지 적어주세요."
-      preamble: 이 마스토돈 서버의 계정을 통해, 네트워크에 속한 다른 사람들을, 그들이 어떤 서버에 있든 팔로우 할 수 있습니다.
-      title: "%{domain}에 가입하기 위한 정보들을 입력하세요."
+      preamble: 합격자 안내 문서를 읽으며 마스토돈 가입을 진행합니다. 로그인 시에는 이메일 주소를 사용하므로, 평소 사용하는 이메일 주소를 입력해 주세요.
+      title: "드뤼아스의 아이들 : 회원가입"
     status:
       account_status: 계정 상태
       confirming: 이메일 확인 과정이 완료되기를 기다리는 중.
@@ -1183,7 +1183,7 @@ ko:
   deletes:
     challenge_not_passed: 입력한 정보가 올바르지 않습니다
     confirm_password: 본인 확인을 위해 현재 사용 중인 암호를 입력해 주십시오
-    confirm_username: 절차를 진행하려면 당신의 사용자명을 입력하세요
+    confirm_username: 절차를 진행하려면 당신의 아이디를 입력하세요
     proceed: 계정 삭제
     success_msg: 계정이 성공적으로 삭제되었습니다
     warning:
@@ -1445,7 +1445,7 @@ ko:
           follow: 팔로우 알림 이메일
           follow_request: 팔로우 요청 이메일
           mention: 멘션 알림 이메일
-          reblog: 부스트 알림 이메일
+          reblog: 리트윗 알림 이메일
       resubscribe_html: 만약 실수로 구독 취소를 했다면 <a href="%{settings_path}">이메일 알림 설정</a>에서 다시 구독할 수 있습니다.
       success_html: 이제 더이상 %{domain}의 마스토돈에서 %{email}로 %{type} 알림을 보내지 않습니다.
       title: 구독 취소
@@ -1521,9 +1521,9 @@ ko:
     poll:
       subject: "%{name}의 설문이 종료됨"
     reblog:
-      body: '당신의 게시물을 %{name} 님이 부스트 했습니다:'
-      subject: "%{name} 님이 내 게시물을 부스트 했습니다"
-      title: 새 부스트
+      body: '당신의 게시물을 %{name} 님이 리트윗 했습니다:'
+      subject: "%{name} 님이 내 게시물을 리트윗 했습니다"
+      title: 새 리트윗
     status:
       subject: "%{name} 님이 방금 게시물을 올렸습니다"
     update:
@@ -1718,7 +1718,7 @@ ko:
         other: "%{count}장의 이미지"
       video:
         other: "%{count} 개의 영상"
-    boosted_from_html: "%{acct_link}의 글을 부스트"
+    boosted_from_html: "%{acct_link}의 글을 리트윗"
     content_warning: '열람 주의: %{warning}'
     default_language: 화면 표시 언어와 동일하게
     disallowed_hashtags:
@@ -1728,34 +1728,34 @@ ko:
       in_reply_not_found: 답장하려는 게시물이 존재하지 않습니다.
     over_character_limit: 최대 %{max}자까지 입력할 수 있습니다
     pin_errors:
-      direct: 멘션된 사용자들에게만 보이는 게시물은 고정될 수 없습니다
-      limit: 이미 너무 많은 게시물을 고정했습니다
-      ownership: 다른 사람의 게시물은 고정될 수 없습니다
-      reblog: 부스트는 고정될 수 없습니다
+      direct: 멘션된 사용자들에게만 보이는 게시물은 프로필 메인에 올릴 수 없습니다
+      limit: 메인트는 5개까지 가능합니다
+      ownership: 다른 사람의 게시물은 프로필 메인에 올릴 수 없습니다
+      reblog: 리트윗은 프로필 메인에 올릴 수 없습니다
     title: '%{name}: "%{quote}"'
     visibilities:
       direct: 다이렉트
-      private: 비공개
-      private_long: 팔로워에게만 공개됩니다
+      private: x
+      private_long: 사용x
       public: 공개
-      public_long: 누구나 볼 수 있으며, 공개 타임라인에 표시됩니다
-      unlisted: 미등재
-      unlisted_long: 누구나 볼 수 있지만, 공개 타임라인에는 표시되지 않습니다
+      public_long: 해당 서버 가입자들만 볼 수 있습니다.
+      unlisted: x
+      unlisted_long: 사용x
   statuses_cleanup:
     enabled: 오래된 게시물 자동 삭제
     enabled_hint: 아래의 예외 목록에 해당하지 않는다면, 명시된 기한 이후 당신의 게시물을 자동으로 삭제합니다
     exceptions: 예외
     explanation: 게시물 삭제는 많은 성능이 필요하기 때문에, 서버에서 바쁘지 않을 때 시간을 들여서 천천히 진행합니다. 이런 이유로, 당신의 게시물은 아마도 정해진 기간보다 좀 더 시간이 지난 이후에 삭제될 것입니다.
     ignore_favs: 좋아요 무시
-    ignore_reblogs: 부스트 무시
+    ignore_reblogs: 리트윗 무시
     interaction_exceptions: 상호작용에 기반한 예외들
-    interaction_exceptions_explanation: 좋아요나 부스트 수가 설정한 값을 넘은 후 다시 낮아진 경우에는 게시물이 삭제되는 것을 보장하지 못합니다.
+    interaction_exceptions_explanation: 좋아요나 리트윗 수가 설정한 값을 넘은 후 다시 낮아진 경우에는 게시물이 삭제되는 것을 보장하지 못합니다.
     keep_direct: 다이렉트 메시지 유지
     keep_direct_hint: 다이렉트 메시지를 삭제하지 않습니다
     keep_media: 미디어가 있는 게시물 유지
     keep_media_hint: 미디어가 첨부된 게시물을 삭제하지 않습니다
-    keep_pinned: 고정된 게시물 유지
-    keep_pinned_hint: 고정 게시물을 삭제하지 않습니다
+    keep_pinned: 메인트 유지
+    keep_pinned_hint: 메인트를 삭제하지 않습니다
     keep_polls: 설문 유지
     keep_polls_hint: 설문을 삭제하지 않습니다
     keep_self_bookmark: 북마크한 게시물 유지
@@ -1774,8 +1774,8 @@ ko:
     min_age_label: 기한
     min_favs: 해당 횟수 이상 좋아요된 게시물 유지
     min_favs_hint: 이 횟수 이상의 좋아요가 된 게시물은 삭제하지 않습니다. 좋아요 수와 관계없이 게시물을 지우고 싶다면 공백으로 두세요
-    min_reblogs: 해당 횟수 이상 부스트된 게시물 유지
-    min_reblogs_hint: 이 횟수 이상의 부스트가 된 게시물은 삭제하지 않습니다. 부스트 수와 관계없이 게시물을 지우고 싶다면 공백으로 두세요
+    min_reblogs: 해당 횟수 이상 리트윗된 게시물 유지
+    min_reblogs_hint: 이 횟수 이상의 리트윗이 된 게시물은 삭제하지 않습니다. 리트윗 수와 관계없이 게시물을 지우고 싶다면 공백으로 두세요
   stream_entries:
     sensitive_content: 민감한 내용
   strikes:
@@ -1785,12 +1785,8 @@ ko:
     does_not_match_previous_name: 이전 이름과 맞지 않습니다
   themes:
     contrast: 마스토돈 (고대비)
-    default: 마스토돈 (어두움)
-    mastodon-light: 마스토돈 (밝음)
-    bird-ui-light: 트위터 테마 (밝음)
-    bird-ui-dark: 트위터 테마 (어두움)
-    theme-ui-light: 전용 테마 (밝음)
-    theme-ui-dark: 전용 테마 (어두움)
+    default: 다크 테마
+    mastodon-light: 라이트 테마
     system: 자동 (시스템 테마 사용)
   time:
     formats:

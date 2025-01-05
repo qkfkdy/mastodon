@@ -5,10 +5,10 @@ ko:
       account:
         attribution_domains_as_text: 가짜 기여로부터 보호합니다.
         discoverable: 내 공개 게시물과 프로필이 마스토돈의 다양한 추천 기능에 나타날 수 있고 프로필이 다른 사용자에게 제안될 수 있습니다
-        display_name: 진짜 이름 또는 재미난 이름.
-        fields: 홈페이지, 호칭, 나이, 뭐든지 적고 싶은 것들.
+        display_name: 한글로 작성해 주세요.
+        fields: 트위터의 위치, 웹사이트 란과 비슷한 항목입니다. '내용' 항목에 공개 프로필 링크를 넣어 주세요. 공지사항에 적힌 내용대로 위치대화는 불가하며, 이미지 출처 등을 작성하실 때 추가로 사용 가능합니다. 사담은 되도록 넣지 말아 주세요. 유튜브 링크는 첨부 가능합니다.
         indexable: 내 공개 게시물이 마스토돈의 검색 결과에 나타날 수 있습니다. 내 게시물과 상호작용했던 사람들은 이 설정과 관계 없이 그 게시물을 검색할 수 있습니다.
-        note: '남을 @mention 하거나 #hashtag 태그를 달 수 있습니다.'
+        note: '[ 영문이름 / 나이 / 성별 / 키/몸무게 / 직업 / 생일 / 별자리 / 기타 ] 양식으로 작성해 주세요.'
         show_collections: 사람들이 내 계정의 팔로우와 팔로워를 볼 수 있습니다. 내가 팔로우 하는 사람은 이 설정에 관계 없이 내가 팔로우 했다는 사실을 알 수 있습니다.
         unlocked: 사람들이 승인 요청 없이 나를 팔로우 할 수 있습니다. 팔로우 요청을 심사하고 새 팔로워를 승인할지 거부할지 선택하고 싶다면 해제하세요.
       account_alias:
@@ -41,7 +41,7 @@ ko:
       defaults:
         autofollow: 이 초대로 가입한 사람은 나를 팔로우하게 됩니다.
         avatar: WEBP, PNG, GIF 혹은 JPG. 최대 %{size}. %{dimensions}px로 축소됨
-        bot: 이 계정이 대부분 자동으로 작업을 수행하고 잘 확인하지 않는다는 것을 알립니다.
+        bot: 봇 계정에 체크되는 항목입니다. 체크하지 말아 주세요.
         context: 필터를 적용 할 한 개 이상의 컨텍스트
         current_password: 보안을 위해 현재 계정의 암호를 입력해주세요
         current_username: 확인을 위해, 현재 계정의 사용자명을 입력해주세요
@@ -54,7 +54,7 @@ ko:
         password: 최소 8글자
         phrase: 게시물 내용이나 열람주의 내용 안에서 대소문자 구분 없이 매칭 됩니다
         scopes: 애플리케이션에 허용할 API들입니다. 최상위 스코프를 선택하면 개별적인 것은 선택하지 않아도 됩니다.
-        setting_aggregate_reblogs: 최근에 부스트 됐던 게시물은 새로 부스트 되어도 보여주지 않기 (새로 받은 부스트에만 적용됩니다)
+        setting_aggregate_reblogs: 최근에 리트윗 됐던 게시물은 새로 리트윗 되어도 보여주지 않기 (새로 받은 리트윗에만 적용됩니다)
         setting_always_send_emails: 기본적으로 마스토돈을 활동적으로 사용하고 있을 때에는 이메일 알림이 보내지지 않습니다
         setting_default_sensitive: 민감한 미디어는 기본적으로 가려져 있으며 클릭해서 볼 수 있습니다
         setting_display_media_default: 민감함으로 표시된 미디어 가리기
@@ -62,7 +62,7 @@ ko:
         setting_display_media_show_all: 모든 미디어를 보이기
         setting_use_blurhash: 그라디언트는 숨겨진 내용의 색상을 기반으로 하지만 상세 내용은 보이지 않게 합니다
         setting_use_pending_items: 타임라인의 새 게시물을 자동으로 보여 주는 대신, 클릭해서 나타내도록 합니다
-        username: 문자, 숫자, 밑줄을 사용할 수 있습니다
+        username: 문자, 숫자, 밑줄을 사용할 수 있습니다. 정해진 양식은 없으니 자유롭게 작성해 주세요. (ps.캐릭터 아이디는 이후 바꿀 수 없습니다!)
         whole_word: 키워드가 영문과 숫자로만 이루어 진 경우, 단어 전체에 매칭 되었을 때에만 작동하게 합니다
       domain_allow:
         domain: 이 도메인은 이 서버에서 데이터를 가져갈 수 있고 이 도메인에서 보내진 데이터는 처리되고 저장 됩니다
@@ -82,7 +82,7 @@ ko:
         backups_retention_period: 사용자들은 나중에 다운로드하기 위해 게시물 아카이브를 생성할 수 있습니다. 양수로 설정된 경우 이 아카이브들은 지정된 일수가 지난 후에 저장소에서 자동으로 삭제될 것입니다.
         bootstrap_timeline_accounts: 이 계정들은 팔로우 추천 목록 상단에 고정됩니다.
         closed_registrations_message: 새 가입을 차단했을 때 표시됩니다
-        content_cache_retention_period: 다른 서버의 모든 게시물(부스트 및 답글 포함)은 해당 게시물에 대한 로컬 사용자의 상호 작용과 관계없이 지정된 일수가 지나면 삭제됩니다. 여기에는 로컬 사용자가 북마크 또는 즐겨찾기로 표시한 게시물도 포함됩니다. 다른 인스턴스 사용자와 주고 받은 비공개 멘션도 손실되며 복원할 수 없습니다. 이 설정은 특수 목적의 인스턴스를 위한 것이며 일반적인 용도의 많은 사용자의 예상이 빗나가게 됩니다.
+        content_cache_retention_period: 다른 서버의 모든 게시물(리트윗 및 답글 포함)은 해당 게시물에 대한 로컬 사용자의 상호 작용과 관계없이 지정된 일수가 지나면 삭제됩니다. 여기에는 로컬 사용자가 북마크 또는 즐겨찾기로 표시한 게시물도 포함됩니다. 다른 인스턴스 사용자와 주고 받은 비공개 멘션도 손실되며 복원할 수 없습니다. 이 설정은 특수 목적의 인스턴스를 위한 것이며 일반적인 용도의 많은 사용자의 예상이 빗나가게 됩니다.
         custom_css: 사용자 지정 스타일을 웹 버전의 마스토돈에 지정할 수 있습니다.
         favicon: WEBP, PNG, GIF 또는 JPG. 기본 파비콘을 대체합니다.
         mascot: 고급 웹 인터페이스의 그림을 대체합니다.
@@ -147,7 +147,7 @@ ko:
         attribution_domains_as_text: 특정 웹사이트만 허용하기
         discoverable: 발견하기 알고리즘에 프로필과 게시물을 추천하기
         fields:
-          name: 라벨
+          name: 제목
           value: 내용
         indexable: 공개 게시물을 검색 결과에 포함시키기
         show_collections: 프로필에 팔로우와 팔로워 보이기
@@ -182,7 +182,7 @@ ko:
       defaults:
         autofollow: 초대를 통한 팔로우
         avatar: 프로필 사진
-        bot: 이것은 자동화된 계정입니다
+        bot: 체크X
         chosen_languages: 언어 필터링
         confirm_new_password: 암호 다시 입력
         confirm_password: 암호 다시 입력
@@ -205,10 +205,10 @@ ko:
         password: 암호
         phrase: 키워드 또는 문장
         setting_advanced_layout: 고급 웹 인터페이스 활성화
-        setting_aggregate_reblogs: 타임라인의 부스트를 그룹화
+        setting_aggregate_reblogs: 타임라인의 리트윗을 그룹화
         setting_always_send_emails: 항상 이메일 알림 보내기
         setting_auto_play_gif: 애니메이션 GIF를 자동 재생
-        setting_boost_modal: 부스트 전 확인 창을 표시
+        setting_boost_modal: 리트윗 전 확인 창을 표시
         setting_default_language: 게시물 언어
         setting_default_privacy: 게시물 프라이버시
         setting_default_sensitive: 미디어를 언제나 민감한 콘텐츠로 설정
@@ -232,8 +232,8 @@ ko:
         sign_in_token_attempt: 보안 코드
         title: 제목
         type: 불러오기 종류
-        username: 사용자명
-        username_or_email: 사용자명 또는 이메일
+        username: 아이디
+        username_or_email: 아이디 또는 이메일
         whole_word: 단어 전체에 매칭
       email_domain_block:
         with_dns_records: 도메인의 IP와 MX 레코드 값을 포함
@@ -261,7 +261,7 @@ ko:
         show_domain_blocks: 도메인 차단 보여주기
         show_domain_blocks_rationale: 왜 도메인이 차단되었는지 보여주기
         site_contact_email: 연락처 이메일
-        site_contact_username: 연락 받을 관리자 사용자명
+        site_contact_username: 연락 받을 관리자 
         site_extended_description: 확장된 설명
         site_short_description: 서버 설명
         site_terms: 개인정보처리방침
@@ -297,7 +297,7 @@ ko:
         follow_request: 누군가 나를 팔로우 하길 요청할 때
         mention: 누군가 나를 언급했을 때
         pending_account: 새 계정이 심사가 필요할 때
-        reblog: 누군가 내 게시물을 부스트 했을 때
+        reblog: 누군가 내 게시물을 리트윗 했을 때
         report: 새 신고가 접수되었을 때
         software_updates:
           all: 모든 업데이트에 대해 알림
