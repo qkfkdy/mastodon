@@ -130,6 +130,8 @@ class ComposeForm extends ImmutablePureComponent {
 
     this.props.onSubmit();
     localStorage.removeItem('savedText'); // 제출 후 텍스트 삭제
+    this.setState({ savedText: '' }); // 텍스트 박스도 빈 값으로 초기화
+    
     if (e) {
       e.preventDefault();
     }
