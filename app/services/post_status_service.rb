@@ -68,8 +68,17 @@ class PostStatusService < BaseService
     @visibility   = :unlisted if @visibility&.to_sym == :public && @account.silenced?
     @scheduled_at = @options[:scheduled_at]&.to_datetime
     @scheduled_at = nil if scheduled_in_the_past?
+    add_reply_mention! if @in_reply_to.present?
   rescue ArgumentError
     raise ActiveRecord::RecordInvalid
+  end
+
+  def add_reply_mention!
+    parent_account = @in_reply_to.account
+    unless @text.include?("@#{parent_account.username}")
+      # 멘션을 글의 맨 앞에 추가
+      @text = "@#{parent_account.username} #{@text}".strip
+    end
   end
 
   def process_status!
