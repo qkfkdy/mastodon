@@ -1431,6 +1431,7 @@ body > [data-popper-placement] {
   .audio-player,
   .attachment-list {
     margin-top: 16px;
+    max-height: 450px;
   }
 
   &.light {
