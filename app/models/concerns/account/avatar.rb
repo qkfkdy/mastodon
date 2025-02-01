@@ -6,7 +6,7 @@ module Account::Avatar
   IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].freeze
   LIMIT = 2.megabytes
 
-  AVATAR_DIMENSIONS = [400, 400].freeze
+  AVATAR_DIMENSIONS = [1000, 1000].freeze
   AVATAR_GEOMETRY = [AVATAR_DIMENSIONS.first, AVATAR_DIMENSIONS.last].join('x')
 
   class_methods do
