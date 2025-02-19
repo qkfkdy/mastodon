@@ -425,14 +425,6 @@ body {
     no-repeat right 8px center / auto 16px;
 }
 
-.status__wrapper-direct {
-  background-color: rgba($ui-highlight-color, 0.1);
-
-  &:focus {
-    background-color: rgba($ui-highlight-color, 0.15);
-  }
-}
-
 .compose-form__actions .icon-button.active,
 .dropdown-button.active,
 .privacy-dropdown__option.active,
