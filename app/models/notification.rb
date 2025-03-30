@@ -150,8 +150,24 @@ class Notification < ApplicationRecord
     self.group_key = "#{type_prefix}-#{hour_bucket}"
   end
 
+  # 알림을 필터링하는 클래스 메서드
+  def self.filtered_mentions_for_dice
+    dice_account_id = Account.find_by(username: 'dice')&.id
+
+    if dice_account_id
+      # 다이스 계정은 1시간 이내만 보이게 하고, 다른 계정은 시간 상관없이 모두 보여줌
+      where.not(from_account_id: dice_account_id)
+        .or(where(from_account_id: dice_account_id)
+          .where(created_at: 1.hour.ago..Time.current))
+    else
+      # 다이스 계정이 없으면 단순히 from_account_id만 필터링
+      where.not(from_account_id: dice_account_id)
+    end
+  end
+
+
   class << self
-    def browserable(types: [], exclude_types: [], from_account_id: nil, include_filtered: false)
+    def browserable(types: [], exclude_types: [], from_account_id: nil, created_at: Time , include_filtered: false)
       requested_types = if types.empty?
                           TYPES
                         else
@@ -164,6 +180,10 @@ class Notification < ApplicationRecord
         scope.merge!(where(filtered: false)) unless include_filtered || from_account_id.present?
         scope.merge!(where(from_account_id: from_account_id)) if from_account_id.present?
         scope.merge!(where(type: requested_types)) unless requested_types.size == TYPES.size
+
+        # @dice에게 받은 멘션을 필터링
+        scope.merge!(filtered_mentions_for_dice) if from_account_id.nil?
+        #scope.merge!(where(created_at: 1.hour.ago..Time.current))
       end
     end
 
