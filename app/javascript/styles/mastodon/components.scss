@@ -8737,7 +8737,9 @@ noscript {
   align-items: flex-end;
 
   &__mastodon {
-    width: 124px;
+    margin-right: -18px;
+    transform: translateX(-12px);
+    width: 80px;
     flex: 0 0 auto;
 
     @media screen and (max-width: 124px + 300px) {
