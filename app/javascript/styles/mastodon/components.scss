@@ -1702,6 +1702,17 @@ body > [data-popper-placement] {
   }
 }
 
+.anotherClassName {
+  .status__wrapper-direct,
+  .notification-ungrouped--direct,
+  .notification-group--direct {
+    display: none !important;
+  }
+}
+
+
+
+
 .status__action-bar {
   display: flex;
   justify-content: space-between;
@@ -1830,7 +1841,7 @@ body > [data-popper-placement] {
 .detailed-status__wrapper-direct {
   .detailed-status,
   .detailed-status__action-bar {
-    background: mix($ui-base-color, $ui-highlight-color, 95%);
+    background: mix($ui-base-color, $white ,100%);
   }
 
   &:focus {
@@ -7115,7 +7126,6 @@ a.status-card {
   overflow: hidden;
   border-radius: 8px;
   position: relative;
-  width: 100%;
   min-height: 64px;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -8734,7 +8744,7 @@ noscript {
 .announcements {
   font-size: 13px;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
 
   &__mastodon {
     margin-right: -18px;
@@ -11127,6 +11137,7 @@ noscript {
 
 .content-warning {
   font-size: 15px;
+
   p {
     margin-bottom: 4px;
   }
