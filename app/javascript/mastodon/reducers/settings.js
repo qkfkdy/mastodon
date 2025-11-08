@@ -20,6 +20,7 @@ const initialState = ImmutableMap({
 
   home: ImmutableMap({
     shows: ImmutableMap({
+      quote: true,
       reblog: true,
       reply: true,
     }),
@@ -35,6 +36,7 @@ const initialState = ImmutableMap({
       follow_request: false,
       favourite: false,
       reblog: false,
+      quote: false,
       mention: false,
       poll: false,
       status: false,
@@ -58,6 +60,7 @@ const initialState = ImmutableMap({
       follow_request: false,
       favourite: true,
       reblog: true,
+      quote: true,
       mention: true,
       poll: true,
       status: true,
@@ -71,12 +74,17 @@ const initialState = ImmutableMap({
       follow_request: false,
       favourite: true,
       reblog: true,
+      quote: true,
       mention: true,
       poll: true,
       status: true,
       update: true,
       'admin.sign_up': true,
       'admin.report': true,
+    }),
+
+    group: ImmutableMap({
+      follow: true
     }),
   }),
 
@@ -109,6 +117,8 @@ const initialState = ImmutableMap({
     'explore/links': false,
     'explore/statuses': false,
     'explore/tags': false,
+    'notifications/remove_quote_hint': false,
+    'quote/quiet_post_hint': false,
   }),
 });
 

@@ -8,6 +8,7 @@ import type { ApiAccountJSON } from 'mastodon/api_types/accounts';
 import type {
   ApiNotificationGroupJSON,
   ApiNotificationJSON,
+  NotificationType,
 } from 'mastodon/api_types/notifications';
 import { allNotificationTypes } from 'mastodon/api_types/notifications';
 import type { ApiStatusJSON } from 'mastodon/api_types/statuses';
@@ -15,6 +16,7 @@ import { usePendingItems } from 'mastodon/initial_state';
 import type { NotificationGap } from 'mastodon/reducers/notification_groups';
 import {
   selectSettingsNotificationsExcludedTypes,
+  selectSettingsNotificationsGroupFollows,
   selectSettingsNotificationsQuickFilterActive,
   selectSettingsNotificationsShows,
 } from 'mastodon/selectors/settings';
@@ -28,8 +30,21 @@ import { importFetchedAccounts, importFetchedStatuses } from './importer';
 import { NOTIFICATIONS_FILTER_SET } from './notifications';
 import { saveSettings } from './settings';
 
+function notificationTypeForFilter(type: NotificationType) {
+  if (type === 'quoted_update') return 'update';
+  else return type;
+}
+
+function notificationTypeForQuickFilter(type: NotificationType) {
+  if (type === 'quoted_update') return 'update';
+  else if (type === 'quote') return 'mention';
+  else return type;
+}
+
 function excludeAllTypesExcept(filter: string) {
-  return allNotificationTypes.filter((item) => item !== filter);
+  return allNotificationTypes.filter(
+    (item) => notificationTypeForQuickFilter(item) !== filter,
+  );
 }
 
 function getExcludedTypes(state: RootState) {
@@ -68,17 +83,19 @@ function dispatchAssociatedRecords(
     dispatch(importFetchedStatuses(fetchedStatuses));
 }
 
-const supportedGroupedNotificationTypes = ['favourite', 'reblog'];
+function selectNotificationGroupedTypes(state: RootState) {
+  const types: NotificationType[] = ['favourite', 'reblog'];
 
-export function shouldGroupNotificationType(type: string) {
-  return supportedGroupedNotificationTypes.includes(type);
+  if (selectSettingsNotificationsGroupFollows(state)) types.push('follow');
+
+  return types;
 }
 
 export const fetchNotifications = createDataLoadingThunk(
   'notificationGroups/fetch',
   async (_params, { getState }) =>
     apiFetchNotificationGroups({
-      grouped_types: supportedGroupedNotificationTypes,
+      grouped_types: selectNotificationGroupedTypes(getState()),
       exclude_types: getExcludedTypes(getState()),
     }),
   ({ notifications, accounts, statuses }, { dispatch }) => {
@@ -102,7 +119,7 @@ export const fetchNotificationsGap = createDataLoadingThunk(
   'notificationGroups/fetchGap',
   async (params: { gap: NotificationGap }, { getState }) =>
     apiFetchNotificationGroups({
-      grouped_types: supportedGroupedNotificationTypes,
+      grouped_types: selectNotificationGroupedTypes(getState()),
       max_id: params.gap.maxId,
       exclude_types: getExcludedTypes(getState()),
     }),
@@ -119,7 +136,7 @@ export const pollRecentNotifications = createDataLoadingThunk(
   'notificationGroups/pollRecentNotifications',
   async (_params, { getState }) => {
     return apiFetchNotificationGroups({
-      grouped_types: supportedGroupedNotificationTypes,
+      grouped_types: selectNotificationGroupedTypes(getState()),
       max_id: undefined,
       exclude_types: getExcludedTypes(getState()),
       // In slow mode, we don't want to include notifications that duplicate the already-displayed ones
@@ -137,6 +154,9 @@ export const pollRecentNotifications = createDataLoadingThunk(
 
     return { notifications };
   },
+  {
+    useLoadingBar: false,
+  },
 );
 
 export const processNewNotificationForGroups = createAppAsyncThunk(
@@ -148,13 +168,17 @@ export const processNewNotificationForGroups = createAppAsyncThunk(
 
     const showInColumn =
       activeFilter === 'all'
-        ? notificationShows[notification.type]
-        : activeFilter === notification.type;
+        ? notificationShows[notificationTypeForFilter(notification.type)] !==
+          false
+        : activeFilter === notificationTypeForQuickFilter(notification.type);
 
     if (!showInColumn) return;
 
     if (
-      (notification.type === 'mention' || notification.type === 'update') &&
+      (notification.type === 'mention' ||
+        notification.type === 'quote' ||
+        notification.type === 'update' ||
+        notification.type === 'quoted_update') &&
       notification.status?.filtered
     ) {
       const filters = notification.status.filtered.filter((result) =>
@@ -168,7 +192,10 @@ export const processNewNotificationForGroups = createAppAsyncThunk(
 
     dispatchAssociatedRecords(dispatch, [notification]);
 
-    return notification;
+    return {
+      notification,
+      groupedTypes: selectNotificationGroupedTypes(state),
+    };
   },
 );
 

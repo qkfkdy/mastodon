@@ -28,7 +28,6 @@ export const BoostModal: React.FC<{
   const intl = useIntl();
 
   const defaultPrivacy = useAppSelector(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     (state) => state.compose.get('default_privacy') as StatusVisibility,
   );
 
@@ -114,7 +113,7 @@ export const BoostModal: React.FC<{
 
           <div className='spacer' />
 
-          <button onClick={handleCancel} className='link-button'>
+          <button onClick={handleCancel} className='link-button' type='button'>
             <FormattedMessage
               id='confirmation_modal.cancel'
               defaultMessage='Cancel'
@@ -128,6 +127,8 @@ export const BoostModal: React.FC<{
                 ? messages.cancel_reblog
                 : messages.reblog,
             )}
+            /* eslint-disable-next-line jsx-a11y/no-autofocus -- We are in the modal */
+            autoFocus
           />
         </div>
       </div>

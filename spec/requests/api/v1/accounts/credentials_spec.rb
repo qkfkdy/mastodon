@@ -53,8 +53,6 @@ RSpec.describe 'credentials API' do
       patch '/api/v1/accounts/update_credentials', headers: headers, params: params
     end
 
-    before { allow(ActivityPub::UpdateDistributionWorker).to receive(:perform_async) }
-
     let(:params) do
       {
         avatar: fixture_file_upload('avatar.gif', 'image/gif'),
@@ -64,6 +62,7 @@ RSpec.describe 'credentials API' do
         indexable: true,
         locked: false,
         note: 'Hello!',
+        attribution_domains: ['example.com'],
         source: {
           privacy: 'unlisted',
           sensitive: true,
@@ -85,13 +84,18 @@ RSpec.describe 'credentials API' do
     end
 
     describe 'with invalid data' do
-      let(:params) { { note: 'This is too long. ' * 30 } }
+      let(:params) { { note: 'a' * 2 * Account::NOTE_LENGTH_LIMIT } }
 
       it 'returns http unprocessable entity' do
         subject
         expect(response).to have_http_status(422)
         expect(response.content_type)
           .to start_with('application/json')
+        expect(response.parsed_body)
+          .to include(
+            error: /Validation failed/,
+            details: include(note: contain_exactly(include(error: 'ERR_TOO_LONG', description: /character limit/)))
+          )
       end
     end
 
@@ -102,35 +106,29 @@ RSpec.describe 'credentials API' do
         .to have_http_status(200)
       expect(response.content_type)
         .to start_with('application/json')
-
-      expect(response.parsed_body).to include({
-        source: hash_including({
-          discoverable: true,
-          indexable: true,
-        }),
-        locked: false,
-      })
-
-      expect(ActivityPub::UpdateDistributionWorker)
-        .to have_received(:perform_async).with(user.account_id)
-    end
-
-    def expect_account_updates
+      expect(response.parsed_body)
+        .to include({
+          source: hash_including({
+            discoverable: true,
+            indexable: true,
+          }),
+          locked: false,
+        })
       expect(user.account.reload)
         .to have_attributes(
           display_name: eq("Alice Isn't Dead"),
           note: 'Hello!',
           avatar: exist,
-          header: exist
+          header: exist,
+          attribution_domains: ['example.com']
         )
-    end
-
-    def expect_user_updates
       expect(user.reload)
         .to have_attributes(
           setting_default_privacy: eq('unlisted'),
           setting_default_sensitive: be(true)
         )
+      expect(ActivityPub::UpdateDistributionWorker)
+        .to have_enqueued_sidekiq_job(user.account_id)
     end
   end
 end

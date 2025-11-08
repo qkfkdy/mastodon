@@ -11,7 +11,11 @@ RSpec.describe List do
     context 'when account has hit max list limit' do
       let(:account) { Fabricate :account }
 
-      before { stub_const 'List::PER_ACCOUNT_LIMIT', 0 }
+      before do
+        stub_const 'List::PER_ACCOUNT_LIMIT', 1
+
+        Fabricate(:list, account: account)
+      end
 
       context 'when creating a new list' do
         it { is_expected.to_not allow_value(account).for(:account).against(:base).with_message(I18n.t('lists.errors.limit')) }
@@ -21,6 +25,28 @@ RSpec.describe List do
         before { subject.save(validate: false) }
 
         it { is_expected.to allow_value(account).for(:account).against(:base) }
+      end
+    end
+  end
+
+  describe 'Scopes' do
+    describe '.with_list_account' do
+      let(:alice) { Fabricate :account }
+      let(:bob) { Fabricate :account }
+      let(:list) { Fabricate :list }
+      let(:other_list) { Fabricate :list }
+
+      before do
+        Fabricate :follow, account: list.account, target_account: alice
+        Fabricate :follow, account: other_list.account, target_account: bob
+        Fabricate :list_account, list: list, account: alice
+        Fabricate :list_account, list: other_list, account: bob
+      end
+
+      it 'returns lists connected to the account' do
+        expect(described_class.with_list_account(alice))
+          .to include(list)
+          .and not_include(other_list)
       end
     end
   end

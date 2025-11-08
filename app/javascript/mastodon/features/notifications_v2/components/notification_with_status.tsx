@@ -2,20 +2,20 @@ import { useMemo } from 'react';
 
 import classNames from 'classnames';
 
-import { HotKeys } from 'react-hotkeys';
-
+import { LinkedDisplayName } from '@/mastodon/components/display_name';
 import { replyComposeById } from 'mastodon/actions/compose';
 import { toggleReblog, toggleFavourite } from 'mastodon/actions/interactions';
 import {
   navigateToStatus,
   toggleStatusSpoilers,
 } from 'mastodon/actions/statuses';
+import { Hotkeys } from 'mastodon/components/hotkeys';
 import type { IconProp } from 'mastodon/components/icon';
 import { Icon } from 'mastodon/components/icon';
-import Status from 'mastodon/containers/status_container';
+import { StatusQuoteManager } from 'mastodon/components/status_quoted';
+import { getStatusHidden } from 'mastodon/selectors/filters';
 import { useAppSelector, useAppDispatch } from 'mastodon/store';
 
-import { DisplayedName } from './displayed_name';
 import type { LabelRenderer } from './notification_group_with_status';
 
 export const NotificationWithStatus: React.FC<{
@@ -39,13 +39,26 @@ export const NotificationWithStatus: React.FC<{
 }) => {
   const dispatch = useAppDispatch();
 
+  const account = useAppSelector((state) =>
+    state.accounts.get(accountIds.at(0) ?? ''),
+  );
   const label = useMemo(
-    () => labelRenderer(<DisplayedName accountIds={accountIds} />, count),
-    [labelRenderer, accountIds, count],
+    () =>
+      labelRenderer(
+        <LinkedDisplayName displayProps={{ account, variant: 'simple' }} />,
+        count,
+      ),
+    [labelRenderer, account, count],
   );
 
   const isPrivateMention = useAppSelector(
     (state) => state.statuses.getIn([statusId, 'visibility']) === 'direct',
+  );
+
+  const isFiltered = useAppSelector(
+    (state) =>
+      statusId &&
+      getStatusHidden(state, { id: statusId, contextType: 'notifications' }),
   );
 
   const handlers = useMemo(
@@ -73,10 +86,10 @@ export const NotificationWithStatus: React.FC<{
     [dispatch, statusId],
   );
 
-  if (!statusId) return null;
+  if (!statusId || isFiltered) return null;
 
   return (
-    <HotKeys handlers={handlers}>
+    <Hotkeys handlers={handlers}>
       <div
         role='button'
         className={classNames(
@@ -95,8 +108,7 @@ export const NotificationWithStatus: React.FC<{
           {label}
         </div>
 
-        <Status
-          // @ts-expect-error -- <Status> is not yet typed
+        <StatusQuoteManager
           id={statusId}
           contextType='notifications'
           withDismiss
@@ -105,6 +117,6 @@ export const NotificationWithStatus: React.FC<{
           unfocusable
         />
       </div>
-    </HotKeys>
+    </Hotkeys>
   );
 };
