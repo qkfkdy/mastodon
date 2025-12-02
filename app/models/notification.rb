@@ -155,10 +155,10 @@ class Notification < ApplicationRecord
     dice_account_id = Account.find_by(username: 'dice')&.id
 
     if dice_account_id
-      # 다이스 계정은 1시간 이내만 보이게 하고, 다른 계정은 시간 상관없이 모두 보여줌
+      # 다이스 계정은 1시간>10분 이내만 보이게 하고, 다른 계정은 시간 상관없이 모두 보여줌
       where.not(from_account_id: dice_account_id)
         .or(where(from_account_id: dice_account_id)
-          .where(created_at: 1.hour.ago..Time.current))
+          .where(created_at: 10.minutes.ago..Time.current))
     else
       # 다이스 계정이 없으면 단순히 from_account_id만 필터링
       where.not(from_account_id: dice_account_id)
