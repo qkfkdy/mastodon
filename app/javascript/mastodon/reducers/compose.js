@@ -103,14 +103,12 @@ const initialPoll = ImmutableMap({
 });
 
 function statusToTextMentions(state, status) {
-  let set = ImmutableOrderedSet([]);
-
-  if (status.getIn(['account', 'id']) !== me) {
-    set = set.add(`@${status.getIn(['account', 'acct'])} `);
-  }
-
-  return set.union(status.get('mentions').filterNot(mention => mention.get('id') === me).map(mention => `@${mention.get('acct')} `)).join('');
+  return status.get('mentions')
+    .filterNot(mention => mention.get('id') === me)
+    .map(mention => `@${mention.get('acct')} `)
+    .join('');
 }
+
 
 function clearAll(state) {
   return state.withMutations(map => {
@@ -340,7 +338,7 @@ export default function compose(state = initialState, action) {
     return state.withMutations(map => {
       map.set('id', null);
       map.set('in_reply_to', action.status.get('id'));
-      map.set('text', '');
+      map.set('text', statusToTextMentions(state, action.status));
       map.set('privacy', privacyPreference(action.status.get('visibility'), state.get('default_privacy')));
       map.set('focusDate', new Date());
       map.set('caretPosition', null);
