@@ -33,17 +33,27 @@ class TextFormatter
   def to_s
     return ''.html_safe if text.blank?
 
-    html = rewrite do |entity|
-      if entity[:url]
-        link_to_url(entity)
-      elsif entity[:hashtag]
-        link_to_hashtag(entity)
-      elsif entity[:screen_name]
-        link_to_mention(entity)
+    html = nil
+    MastodonOTELTracer.in_span('TextFormatter#to_s extract_and_rewrite') do
+      html = rewrite do |entity|
+        if entity[:url]
+          link_to_url(entity)
+        elsif entity[:hashtag]
+          link_to_hashtag(entity)
+        elsif entity[:screen_name]
+          link_to_mention(entity)
+        end
       end
     end
 
-    html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
+    # 멘션/해시태그/링크 처리 후에 마크다운 적용
+    html = apply_simple_markdown(html)
+
+    if multiline?
+      MastodonOTELTracer.in_span('TextFormatter#to_s simple_format') do
+        html = simple_format(html, {}, sanitize: false).delete("\n")
+      end
+    end
 
     html.html_safe # rubocop:disable Rails/OutputSafety
   end
@@ -58,7 +68,7 @@ class TextFormatter
 
       prefix      = url.match(URL_PREFIX_REGEX).to_s
       display_url = url[prefix.length, 30]
-      suffix      = url[(prefix.length + 30)..]
+      suffix      = url[prefix.length + 30..]
       cutoff      = url[prefix.length..].length > 30
 
       if suffix && suffix.length == 1 # revert truncation to account for ellipsis
@@ -78,6 +88,45 @@ class TextFormatter
   end
 
   private
+
+  def apply_simple_markdown(html)
+
+    # 인용문
+    html = html.gsub(/^>\s*(.+)/, '<blockquote>\1</blockquote>')
+
+    # ***굵은 기울임***
+    html = html.gsub(/\*\*\*([^\*\n<>]+)\*\*\*/, '<strong><em>\1</em></strong>')
+
+    # **굵게**
+    html = html.gsub(/\*\*([^\*\n<>]+)\*\*/, '<strong>\1</strong>')
+
+    # *기울임*
+    html = html.gsub(/(?<!\*)\*([^\*\n<>]+)\*(?!\*)/, '<em>\1</em>')
+
+    # ~~취소선~~
+    html = html.gsub(/~~([^~\n<>]+)~~/, '<del>\1</del>')
+
+    # __밑줄__
+    html = html.gsub(/__([^_\n<>]+)__/, '<u>\1</u>')
+
+    # `inline code`
+    html = html.gsub(/`([^`\n<>]+)`/, '<code>\1</code>')
+
+    # ``` 코드블록 ```
+    html = html.gsub(/```(?:[a-zA-Z0-9]+)?\n(.+?)```/m) do
+      "<pre><code>#{$1}</code></pre>"
+    end
+
+    # #, ##, ### 헤더
+    html = html.gsub(/^###\s*(.+)$/, '<h3>\1</h3>')
+    html = html.gsub(/^##\s*(.+)$/, '<h2>\1</h2>')
+    html = html.gsub(/^#\s*(.+)$/, '<h1>\1</h1>')
+
+    # hair space 강조
+    html = html.gsub(/\u200A([^\u200A\n<>]+)\u200A/, '<span style="color: #1d9bf0;">\1</span>')
+
+    html
+  end
 
   def rewrite
     entities.sort_by! do |entity|
@@ -99,48 +148,54 @@ class TextFormatter
   end
 
   def link_to_url(entity)
-    TextFormatter.shortened_link(entity[:url], rel_me: with_rel_me?)
+    MastodonOTELTracer.in_span('TextFormatter#link_to_url') do
+      TextFormatter.shortened_link(entity[:url], rel_me: with_rel_me?)
+    end
   end
 
   def link_to_hashtag(entity)
-    hashtag = entity[:hashtag]
-    url     = tag_url(hashtag)
+    MastodonOTELTracer.in_span('TextFormatter#link_to_hashtag') do
+      hashtag = entity[:hashtag]
+      url     = tag_url(hashtag)
 
-    <<~HTML.squish
-      <a href="#{h(url)}" class="mention hashtag" rel="tag">#<span>#{h(hashtag)}</span></a>
-    HTML
+      <<~HTML.squish
+        <a href="#{h(url)}" class="mention hashtag" rel="tag">#<span>#{h(hashtag)}</span></a>
+      HTML
+    end
   end
 
   def link_to_mention(entity)
-    username, domain = entity[:screen_name].split('@')
-    domain           = nil if local_domain?(domain)
-    account          = nil
+    MastodonOTELTracer.in_span('TextFormatter#link_to_mention') do
+      username, domain = entity[:screen_name].split('@')
+      domain           = nil if local_domain?(domain)
+      account          = nil
 
-    if preloaded_accounts?
-      same_username_hits = 0
+      if preloaded_accounts?
+        same_username_hits = 0
 
-      preloaded_accounts.each do |other_account|
-        same_username = other_account.username.casecmp(username).zero?
-        same_domain   = other_account.domain.nil? ? domain.nil? : other_account.domain.casecmp(domain)&.zero?
+        preloaded_accounts.each do |other_account|
+          same_username = other_account.username.casecmp(username).zero?
+          same_domain   = other_account.domain.nil? ? domain.nil? : other_account.domain.casecmp(domain)&.zero?
 
-        if same_username && !same_domain
-          same_username_hits += 1
-        elsif same_username && same_domain
-          account = other_account
+          if same_username && !same_domain
+            same_username_hits += 1
+          elsif same_username && same_domain
+            account = other_account
+          end
         end
+      else
+        account = entity_cache.mention(username, domain)
       end
-    else
-      account = entity_cache.mention(username, domain)
+
+      return "@#{h(entity[:screen_name])}" if account.nil?
+
+      url = ActivityPub::TagManager.instance.url_for(account)
+      display_username = same_username_hits&.positive? || with_domains? ? account.pretty_acct : account.username
+
+      <<~HTML.squish
+        <span class="h-card" translate="no"><a href="#{h(url)}" class="u-url mention">@<span>#{h(display_username)}</span></a></span>
+      HTML
     end
-
-    return "@#{h(entity[:screen_name])}" if account.nil?
-
-    url = ActivityPub::TagManager.instance.url_for(account)
-    display_username = same_username_hits&.positive? || with_domains? ? account.pretty_acct : account.username
-
-    <<~HTML.squish
-      <span class="h-card" translate="no"><a href="#{h(url)}" class="u-url mention">@<span>#{h(display_username)}</span></a></span>
-    HTML
   end
 
   def entity_cache
