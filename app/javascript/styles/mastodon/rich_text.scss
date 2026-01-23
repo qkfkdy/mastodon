@@ -4,7 +4,7 @@
 .reply-indicator__content {
   pre,
   blockquote {
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     white-space: pre-wrap;
     unicode-bidi: plaintext;
 
@@ -15,8 +15,8 @@
 
   blockquote {
     padding-inline-start: 10px;
-    border-inline-start: 3px solid $darker-text-color;
-    color: $darker-text-color;
+    border-inline-start: 3px solid $point;
+    color: $point;
     white-space: normal;
 
     p:last-child {
@@ -32,11 +32,22 @@
   b,
   strong {
     font-weight: 700;
+    color: $point;
   }
 
   em,
   i {
-    font-style: italic;
+    display: flex;
+    color: $base;
+    align-items: center;
+    font-size: 80%;
+    line-height: 1.5;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background-color: rgba($base, 0.3);
   }
 
   ul,
@@ -55,4 +66,143 @@
   ol {
     list-style-type: decimal;
   }
+
+  tablea {
+    display: inline-flex;
+    padding-inline-end: 6px;
+    background: rgba($point, 0.4);
+    font-size: 70%;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    border-radius: 2px;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  tableb {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  tablec {
+    color: rgba($point, 0.5);
+    display: block ; 
+    font-size: 80%;
+    line-height: 1.5;
+  }
+
+  tabled {
+    border: 1px solid $point ;
+    display: block ;
+    padding: 6px;
+    text-align: left;
+    color:$point;
+    font-size: 80%;
+  }
+
+  tablee {
+    display: block ;
+    padding: 6px;
+    text-shadow: 0px 0px 6px rgba($base, 0.3);
+    text-align: center;
+    background: $point;
+    color: $backcolor;
+    font-weight: 700;
+  }
+  
+
+  tablef {
+    display: inline-flex;
+  }
+
+  ecta {
+    display: inline-flex;
+    padding-inline: 6px;
+    background: $base;
+    font-size: 70%;
+    color: $backcolor;
+    margin-right: 4px;
+    margin-bottom: 2px;
+    border-radius: 2px;
+    gap: 4px;
+    align-items: flex-end;
+  }
+
+  ectb {
+    background: rgba($base, 0.15);
+    border-radius: 2px;
+    display: flex;
+    color: rgba($base, 0.8);
+    font-size: 70%;
+    margin-top: 4px;
+    padding-inline: 8px;
+    padding-block: 4px;
+    margin-left: 42px;
+    line-height: 1.4;
+    gap: 6px;
+  }
+
+  ectc {
+    margin-left: auto;
+  }
+
+  ectd {
+    align-items: flex-end;
+    background: $backcolor;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    box-shadow: inset 0 0 0 1px $base;
+    color: $base;
+    display: inline-flex;
+    font-size: 65%;
+    margin-left: -10.5px;
+    margin-bottom: 2px;
+    margin-right: 4px;
+    padding-inline: 7px;
+  }
+
+  ecte {
+    display: inline-flex;
+    color: $point;
+  }
+
+  ectf {
+    align-items: flex-end;
+    display: inline-flex;
+    font-size: 70%;
+    margin-bottom: 2px;
+    box-shadow: inset 0 0 0 1px $base;
+    margin-right: 5px;
+  }
+
+  poem {
+    align-items: center;
+    color: $base;
+    display: flex;
+    font-size: 90%;
+    border-left: 5px solid $point;
+    padding-inline: 18px;
+    background: $backcolor;
+    line-height: 1.4;
+  }
+
+  /* 1. 애니메이션 효과의 동작을 정의 (독립적인 블록) */
+  @keyframes gradient-flow {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* 2. 정의한 애니메이션을 해당 요소에 적용 */
+  ai {
+    font-weight: 600;
+    /* 흐름 효과를 위해 배경 사이즈를 200%로 설정 (필수) */
+    background: linear-gradient(90deg, #00d7bc, #736efe, #ff7eb3, #00d7bc);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-flow 3s linear infinite;
+    text-shadow: 0px 0px 1px rgb(175 172 255 / 50%);
+  }
+
 }

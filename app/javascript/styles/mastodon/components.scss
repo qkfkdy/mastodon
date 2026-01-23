@@ -3,6 +3,13 @@
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
+body {
+  background-image: url('../images/theme/bg_dark.png');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center bottom;;
+}
+
 .animated-number {
   display: inline-flex;
   flex-direction: column;
@@ -1050,7 +1057,7 @@ body > [data-popper-placement] {
   }
 
   a {
-    color: $secondary-text-color;
+    color: $blurple-400;
     text-decoration: none;
     unicode-bidi: isolate;
 
@@ -2751,7 +2758,7 @@ a.account__display-name {
       pointer-events: none;
       display: flex;
       justify-content: flex-end;
-      min-width: 285px;
+      min-width: 300px;
 
       &--start {
         justify-content: flex-start;
@@ -2759,7 +2766,7 @@ a.account__display-name {
 
       &__inner {
         position: fixed;
-        width: 285px;
+        width: 300px;
         pointer-events: auto;
         height: 100%;
       }
@@ -3029,7 +3036,7 @@ $ui-header-logo-wordmark-width: 99px;
 }
 
 @media screen and (max-width: $no-gap-breakpoint - 1px) {
-  $sidebar-width: 285px;
+  $sidebar-width: 300px;
 
   .columns-area__panels__main {
     width: calc(100% - $sidebar-width);
@@ -3093,7 +3100,7 @@ $ui-header-logo-wordmark-width: 99px;
   }
 }
 
-@media screen and (max-width: $no-gap-breakpoint - 285px - 1px) {
+@media screen and (max-width: $no-gap-breakpoint - 300px - 1px) {
   $sidebar-width: 55px;
 
   .columns-area__panels__main {
@@ -3520,7 +3527,7 @@ $ui-header-logo-wordmark-width: 99px;
 }
 
 .compose-panel {
-  width: 285px;
+  width: 300px;
   margin-top: 10px;
   display: flex;
   flex-direction: column;
@@ -8008,6 +8015,7 @@ noscript {
   width: 380px;
   overflow: hidden;
 
+
   @media screen and (width <= 420px) {
     width: 90%;
   }
@@ -8033,6 +8041,7 @@ noscript {
       width: calc(100% - 60px);
       box-shadow: 2px 4px 15px rgba($base-shadow-color, 0.4);
       border-radius: 0 0 0 8px;
+      background: $backcolor;
     }
   }
 
@@ -8747,10 +8756,8 @@ noscript {
   align-items: flex-start;
 
   &__mastodon {
-    margin-right: -18px;
-    transform: translateX(-12px);
-    width: 80px;
     flex: 0 0 auto;
+    width: 80px;
 
     @media screen and (max-width: 124px + 300px) {
       display: none;
