@@ -38,7 +38,7 @@ export const NotificationWithStatus: React.FC<{
   unread,
 }) => {
   const dispatch = useAppDispatch();
-
+  const status = useAppSelector((state) => state.statuses.get(statusId));
   const label = useMemo(
     () => labelRenderer(<DisplayedName accountIds={accountIds} />, count),
     [labelRenderer, accountIds, count],
@@ -47,6 +47,15 @@ export const NotificationWithStatus: React.FC<{
   const isPrivateMention = useAppSelector(
     (state) => state.statuses.getIn([statusId, 'visibility']) === 'direct',
   );
+
+  const isQuietStatus = useMemo(() => {
+    if (!status) return false;
+    
+    const repliesCount = status.get('replies_count', 0);
+    const isFavourited = status.get('favourited', false);
+
+    return repliesCount === 0 && !isFavourited;
+  }, [status]);
 
   const handlers = useMemo(
     () => ({
@@ -82,7 +91,7 @@ export const NotificationWithStatus: React.FC<{
         className={classNames(
           `notification-ungrouped focusable notification-ungrouped--${type}`,
           {
-            'notification-ungrouped--unread': unread,
+            'notification-ungrouped--unread': unread || isQuietStatus,
             'notification-ungrouped--direct': isPrivateMention,
           },
         )}
