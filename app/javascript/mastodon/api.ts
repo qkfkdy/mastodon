@@ -1,4 +1,9 @@
-import type { AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
+import type {
+  AxiosError,
+  AxiosResponse,
+  Method,
+  RawAxiosRequestHeaders,
+} from 'axios';
 import axios from 'axios';
 import LinkHeader from 'http-link-header';
 
@@ -13,6 +18,50 @@ export const getLinks = (response: AxiosResponse) => {
   }
 
   return LinkHeader.parse(value);
+};
+
+export interface AsyncRefreshHeader {
+  id: string;
+  retry: number;
+}
+
+const isAsyncRefreshHeader = (obj: object): obj is AsyncRefreshHeader =>
+  'id' in obj && 'retry' in obj;
+
+export const getAsyncRefreshHeader = (
+  response: AxiosResponse,
+): AsyncRefreshHeader | null => {
+  const value = response.headers['mastodon-async-refresh'] as
+    | string
+    | undefined;
+
+  if (!value) {
+    return null;
+  }
+
+  const asyncRefreshHeader: Record<string, unknown> = {};
+
+  value.split(/,\s*/).forEach((pair) => {
+    const [key, val] = pair.split('=', 2);
+
+    let typedValue: string | number;
+
+    if (key && ['id', 'retry'].includes(key) && val) {
+      if (val.startsWith('"')) {
+        typedValue = val.slice(1, -1);
+      } else {
+        typedValue = parseInt(val);
+      }
+
+      asyncRefreshHeader[key] = typedValue;
+    }
+  });
+
+  if (isAsyncRefreshHeader(asyncRefreshHeader)) {
+    return asyncRefreshHeader;
+  }
+
+  return null;
 };
 
 const csrfHeader: RawAxiosRequestHeaders = {};
@@ -41,7 +90,7 @@ const authorizationTokenFromInitialState = (): RawAxiosRequestHeaders => {
 
 // eslint-disable-next-line import/no-default-export
 export default function api(withAuthorization = true) {
-  return axios.create({
+  const instance = axios.create({
     transitional: {
       clarifyTimeoutError: true,
     },
@@ -60,16 +109,37 @@ export default function api(withAuthorization = true) {
       },
     ],
   });
+
+  instance.interceptors.response.use(
+    (response: AxiosResponse) => {
+      if (response.headers.deprecation) {
+        console.warn(
+          `Deprecated request: ${response.config.method} ${response.config.url}`,
+        );
+      }
+      return response;
+    },
+    (error: AxiosError) => {
+      return Promise.reject(error);
+    },
+  );
+
+  return instance;
 }
 
-type RequestParamsOrData = Record<string, unknown>;
+type ApiUrl = `v${1 | '1_alpha' | 2}/${string}`;
+type RequestParamsOrData<T = unknown> = T | Record<string, unknown>;
 
-export async function apiRequest<ApiResponse = unknown>(
+export async function apiRequest<
+  ApiResponse = unknown,
+  ApiParamsOrData = unknown,
+>(
   method: Method,
   url: string,
   args: {
-    params?: RequestParamsOrData;
-    data?: RequestParamsOrData;
+    signal?: AbortSignal;
+    params?: RequestParamsOrData<ApiParamsOrData>;
+    data?: RequestParamsOrData<ApiParamsOrData>;
     timeout?: number;
   } = {},
 ) {
@@ -82,30 +152,41 @@ export async function apiRequest<ApiResponse = unknown>(
   return data;
 }
 
-export async function apiRequestGet<ApiResponse = unknown>(
-  url: string,
-  params?: RequestParamsOrData,
+export async function apiRequestGet<ApiResponse = unknown, ApiParams = unknown>(
+  url: ApiUrl,
+  params?: RequestParamsOrData<ApiParams>,
+  args: {
+    signal?: AbortSignal;
+    timeout?: number;
+  } = {},
 ) {
-  return apiRequest<ApiResponse>('GET', url, { params });
+  return apiRequest<ApiResponse>('GET', url, { params, ...args });
 }
 
-export async function apiRequestPost<ApiResponse = unknown>(
-  url: string,
-  data?: RequestParamsOrData,
+export async function apiRequestPost<ApiResponse = unknown, ApiData = unknown>(
+  url: ApiUrl,
+  data?: RequestParamsOrData<ApiData>,
 ) {
   return apiRequest<ApiResponse>('POST', url, { data });
 }
 
-export async function apiRequestPut<ApiResponse = unknown>(
-  url: string,
-  data?: RequestParamsOrData,
+export async function apiRequestPut<ApiResponse = unknown, ApiData = unknown>(
+  url: ApiUrl,
+  data?: RequestParamsOrData<ApiData>,
 ) {
   return apiRequest<ApiResponse>('PUT', url, { data });
 }
 
-export async function apiRequestDelete<ApiResponse = unknown>(
-  url: string,
-  params?: RequestParamsOrData,
-) {
+export async function apiRequestDelete<
+  ApiResponse = unknown,
+  ApiParams = unknown,
+>(url: ApiUrl, params?: RequestParamsOrData<ApiParams>) {
   return apiRequest<ApiResponse>('DELETE', url, { params });
+}
+
+export async function apiRequestPatch<ApiResponse = unknown, ApiData = unknown>(
+  url: ApiUrl,
+  data?: RequestParamsOrData<ApiData>,
+) {
+  return apiRequest<ApiResponse>('PATCH', url, { data });
 }

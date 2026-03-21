@@ -7,6 +7,7 @@
       send_paranoid_instructions: Hvis e-postadressen din finnes i databasen vår vil du om noen få minutter motta en e-post med instruksjoner for bekreftelse. Sjekk spam-mappen din hvis du ikke mottok e-posten.
     failure:
       already_authenticated: Du er allerede innlogget.
+      closed_registrations: Registreringsforsøket ditt har blitt blokkert på grunn av en nettverkspolicy. Hvis du mener dette er feil, kontakt %{email}.
       inactive: Kontoen din er ikke blitt aktivert ennå.
       invalid: Ugyldig %{authentication_keys} eller passord.
       last_attempt: Du har ett forsøk igjen før kontoen din låses.
@@ -94,11 +95,6 @@
       updated_not_active: Passordet ditt er endret.
     registrations:
       destroyed: Ha det! Kontoen din er avsluttet. Vi håper å se deg igjen snart.
-      signed_up: Velkommen! Registreringen var vellykket.
-      signed_up_but_inactive: Registreringen var vellykket. Vi kunne dessverre ikke logge deg inn fordi kontoen din ennå ikke har blitt aktivert.
-      signed_up_but_locked: Registreringen var vellykket. Vi kunne dessverre ikke logge deg inn fordi kontoen din har blitt låst.
-      signed_up_but_pending: En melding med en bekreftelseslenke er sendt til din e-postadresse. Etter at du har klikket på lenken, vil vi gjennomgå søknaden din. Du vil bli varslet hvis den blir godkjent.
-      signed_up_but_unconfirmed: En melding med en bekreftelseslenke har blitt sendt til din e-postadresse. Klikk på lenken i e-posten for å aktivere kontoen din. Sjekk spam-mappen din hvis du ikke mottok e-posten.
       update_needs_confirmation: Du har oppdatert kontoen din, men vi må bekrefte din nye e-postadresse. Sjekk e-posten din og følg bekreftelseslenken for å bekrefte din nye e-postadresse. Sjekk spam-mappen din hvis du ikke mottok e-posten.
       updated: Kontoen din ble oppdatert.
     sessions:

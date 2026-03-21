@@ -31,7 +31,7 @@ class TextFormatter
   end
 
   def to_s
-    return ''.html_safe if text.blank?
+    return add_quote_fallback('').html_safe if text.blank? # rubocop:disable Rails/OutputSafety
 
     html = nil
     MastodonOTELTracer.in_span('TextFormatter#to_s extract_and_rewrite') do
@@ -48,6 +48,8 @@ class TextFormatter
 
     # 멘션/해시태그/링크 처리 후에 마크다운 적용
     html = apply_simple_markdown(html)
+
+    html = add_quote_fallback(html) if options[:quoted_status].present?
 
     if multiline?
       MastodonOTELTracer.in_span('TextFormatter#to_s simple_format') do
@@ -71,7 +73,7 @@ class TextFormatter
 
       prefix      = url.match(URL_PREFIX_REGEX).to_s
       display_url = url[prefix.length, 30]
-      suffix      = url[prefix.length + 30..]
+      suffix      = url[(prefix.length + 30)..]
       cutoff      = url[prefix.length..].length > 30
 
       if suffix && suffix.length == 1 # revert truncation to account for ellipsis
@@ -95,7 +97,7 @@ class TextFormatter
   def apply_simple_markdown(html)
 
     html = html.gsub(/\{([^\}]+)\]\<([^>]+)\>/, '<a href="\2">\1</a>')
-    
+
     # 수평선
     html = html.gsub(/\n?-{3,}\s*\n/, "\u200C<hr>\u200C")
 
@@ -120,7 +122,7 @@ class TextFormatter
     # $인용$
     #html = html.gsub(/(\n?)$([^$\n<>]+)$(\n?)/, "\u200C<blockquote>\\2</blockquote>\u200C")
 
-    # 1. 테이블f 
+    # 1. 테이블f
     html = html.gsub(/(\n?)\`\`\`\`\`\`([^\`\n<>]+)\`\`\`\`\`\`(\n?)/, "\u200C<tablef>\\2</tablef>\u200C")
 
     # 1. 테이블e (가장 긴 마커: `````)
@@ -262,5 +264,16 @@ class TextFormatter
 
   def preloaded_accounts?
     preloaded_accounts.present?
+  end
+
+  def add_quote_fallback(html)
+    return html if options[:quoted_status].nil?
+
+    url = ActivityPub::TagManager.instance.url_for(options[:quoted_status]) || ActivityPub::TagManager.instance.uri_for(options[:quoted_status])
+    return html if url.blank? || html.include?(url)
+
+    <<~HTML.squish
+      <p class="quote-inline">RE: #{TextFormatter.shortened_link(url)}</p>#{html}
+    HTML
   end
 end

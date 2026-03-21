@@ -60,6 +60,7 @@ ia:
       error:
         title: Un error ha occurrite
       new:
+        prompt_html: "%{client_name} vole haber le permission de acceder a tu conto. <strong>Solmente approba iste requesta si tu recognosce e confide in iste fonte.</strong>"
         review_permissions: Revider permissiones
         title: Autorisation necessari
       show:

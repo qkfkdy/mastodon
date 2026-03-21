@@ -5,6 +5,24 @@ require 'rails_helper'
 RSpec.describe 'Accounts show response' do
   let(:account) { Fabricate(:account) }
 
+  context 'with numeric-based identifiers' do
+    context 'with JSON format' do
+      it 'returns http success' do
+        get "/ap/users/#{account.id}", headers: { 'ACCEPT' => 'application/json' }
+
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context 'with HTML format' do
+      it 'redirects to success' do
+        get "/ap/users/#{account.id}", as: 'html'
+
+        expect(response).to redirect_to("/@#{account.username}")
+      end
+    end
+  end
+
   context 'with an unapproved account' do
     before { account.user.update(approved: false) }
 
@@ -53,8 +71,9 @@ RSpec.describe 'Accounts show response' do
           it 'returns a standard HTML response', :aggregate_failures do
             expect(response)
               .to have_http_status(200)
-              .and render_template(:show)
               .and have_http_link_header(ActivityPub::TagManager.instance.uri_for(account)).for(rel: 'alternate')
+            expect(response.parsed_body.at('title').content)
+              .to include(account.username)
           end
         end
 

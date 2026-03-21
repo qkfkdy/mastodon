@@ -5,14 +5,14 @@
 # Table name: notification_policies
 #
 #  id                   :bigint(8)        not null, primary key
-#  account_id           :bigint(8)        not null
+#  for_limited_accounts :integer          default("filter"), not null
+#  for_new_accounts     :integer          default("accept"), not null
+#  for_not_followers    :integer          default("accept"), not null
+#  for_not_following    :integer          default("accept"), not null
+#  for_private_mentions :integer          default("filter"), not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  for_not_following    :integer          default("accept"), not null
-#  for_not_followers    :integer          default("accept"), not null
-#  for_new_accounts     :integer          default("accept"), not null
-#  for_private_mentions :integer          default("filter"), not null
-#  for_limited_accounts :integer          default("filter"), not null
+#  account_id           :bigint(8)        not null
 #
 
 class NotificationPolicy < ApplicationRecord
@@ -62,6 +62,6 @@ class NotificationPolicy < ApplicationRecord
   private
 
   def pending_notification_requests
-    @pending_notification_requests ||= notification_requests.limit(MAX_MEANINGFUL_COUNT).pick(Arel.sql('count(*), coalesce(sum(notifications_count), 0)::bigint'))
+    @pending_notification_requests ||= notification_requests.without_suspended.limit(MAX_MEANINGFUL_COUNT).pick(Arel.sql('count(*), coalesce(sum(notifications_count), 0)::bigint'))
   end
 end

@@ -7,7 +7,7 @@ web_host = ENV.fetch('WEB_DOMAIN') { host }
 alternate_domains = ENV.fetch('ALTERNATE_DOMAINS') { '' }.split(/\s*,\s*/)
 
 Rails.application.configure do
-  https = Rails.env.production? || ENV['LOCAL_HTTPS'] == 'true'
+  https = ENV['LOCAL_HTTPS'] == 'false' ? false : (Rails.env.production? || ENV['LOCAL_HTTPS'] == 'true')
 
   config.x.local_domain = host
   config.x.web_domain   = web_host
@@ -21,7 +21,7 @@ Rails.application.configure do
 
   config.x.streaming_api_base_url = ENV.fetch('STREAMING_API_BASE_URL') do
     if Rails.env.production?
-      "ws#{https ? 's' : ''}://#{web_host}"
+      "ws#{'s' if https}://#{web_host}"
     else
       "ws://#{host.split(':').first}:4000"
     end
@@ -31,6 +31,6 @@ Rails.application.configure do
     config.hosts << host if host.present?
     config.hosts << web_host if web_host.present?
     config.hosts.concat(alternate_domains) if alternate_domains.present?
-    config.host_authorization = { exclude: ->(request) { request.path == '/health' } }
+    config.host_authorization = { exclude: ->(request) { request.path == '/health' || ENV['DISABLE_HOST_CHECK'] == 'true' } }
   end
 end

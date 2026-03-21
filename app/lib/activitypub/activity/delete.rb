@@ -2,11 +2,10 @@
 
 class ActivityPub::Activity::Delete < ActivityPub::Activity
   def perform
-    if @account.uri == object_uri
-      delete_person
-    else
-      delete_note
-    end
+    return delete_person if @account.uri == object_uri
+    return delete_feature_authorization! unless !Mastodon::Feature.collections_federation_enabled? || feature_authorization_from_object.nil?
+
+    delete_object
   end
 
   private
@@ -17,7 +16,7 @@ class ActivityPub::Activity::Delete < ActivityPub::Activity
     end
   end
 
-  def delete_note
+  def delete_object
     return if object_uri.nil?
 
     with_redis_lock("delete_status_in_progress:#{object_uri}", raise_on_failure: false) do
@@ -32,21 +31,52 @@ class ActivityPub::Activity::Delete < ActivityPub::Activity
         Tombstone.find_or_create_by(uri: object_uri, account: @account)
       end
 
-      @status   = Status.find_by(uri: object_uri, account: @account)
-      @status ||= Status.find_by(uri: @object['atomUri'], account: @account) if @object.is_a?(Hash) && @object['atomUri'].present?
-
-      return if @status.nil?
-
-      forwarder.forward! if forwarder.forwardable?
-      delete_now!
+      case @object['type']
+      when 'QuoteAuthorization'
+        revoke_quote
+      when 'Note', 'Question'
+        delete_status
+      else
+        delete_status || revoke_quote
+      end
     end
+  end
+
+  def delete_status
+    @status   = Status.find_by(uri: object_uri, account: @account)
+    @status ||= Status.find_by(uri: @object['atomUri'], account: @account) if @object.is_a?(Hash) && @object['atomUri'].present?
+
+    return if @status.nil?
+
+    forwarder.forward! if forwarder.forwardable?
+    RemoveStatusService.new.call(@status, redraft: false)
+
+    true
+  end
+
+  def revoke_quote
+    @quote = Quote.find_by(approval_uri: object_uri, quoted_account: @account, state: [:pending, :accepted])
+    return if @quote.nil?
+
+    ActivityPub::Forwarder.new(@account, @json, @quote.status).forward! if @quote.status.present?
+
+    @quote.reject!
+
+    DistributionWorker.perform_async(@quote.status_id, { 'update' => true }) if @quote.status.present?
+  end
+
+  def delete_feature_authorization!
+    collection_item = feature_authorization_from_object
+    DeleteCollectionItemService.new.call(collection_item, revoke: true)
   end
 
   def forwarder
     @forwarder ||= ActivityPub::Forwarder.new(@account, @json, @status)
   end
 
-  def delete_now!
-    RemoveStatusService.new.call(@status, redraft: false)
+  def feature_authorization_from_object
+    return @collection_item if instance_variable_defined?(:@collection_item)
+
+    @collection_item = CollectionItem.local.find_by(approval_uri: value_or_id(@object), account_id: @account.id)
   end
 end

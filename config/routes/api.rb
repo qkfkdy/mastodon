@@ -4,6 +4,23 @@ namespace :api, format: false do
   # OEmbed
   get '/oembed', to: 'oembed#show', as: :oembed
 
+  # Experimental JSON / REST API
+  namespace :v1_alpha do
+    resources :accounts, only: [] do
+      resources :collections, only: [:index]
+    end
+
+    resources :async_refreshes, only: :show
+
+    resources :collections, only: [:show, :create, :update, :destroy] do
+      resources :items, only: [:create, :destroy], controller: 'collection_items' do
+        member do
+          post :revoke
+        end
+      end
+    end
+  end
+
   # JSON / REST API
   namespace :v1 do
     resources :statuses, only: [:index, :create, :show, :update, :destroy] do
@@ -12,6 +29,12 @@ namespace :api, format: false do
         resources :favourited_by, controller: :favourited_by_accounts, only: :index
         resource :reblog, only: :create
         post :unreblog, to: 'reblogs#destroy'
+
+        resources :quotes, only: :index do
+          member do
+            post :revoke
+          end
+        end
 
         resource :favourite, only: :create
         post :unfavourite, to: 'favourites#destroy'
@@ -27,6 +50,8 @@ namespace :api, format: false do
 
         resource :history, only: :show
         resource :source, only: :show
+
+        resource :interaction_policy, only: :update
 
         post :translate, to: 'translations#create'
       end
@@ -44,17 +69,22 @@ namespace :api, format: false do
       resources :list, only: :show
     end
 
-    get '/streaming', to: 'streaming#index'
-    get '/streaming/(*any)', to: 'streaming#index'
+    with_options to: 'streaming#index' do
+      get '/streaming'
+      get '/streaming/(*any)'
+    end
 
     resources :custom_emojis, only: [:index]
     resources :suggestions, only: [:index, :destroy]
     resources :scheduled_statuses, only: [:index, :show, :update, :destroy]
     resources :preferences, only: [:index]
+    resources :donation_campaigns, only: [:index]
 
-    resources :annual_reports, only: [:index] do
+    resources :annual_reports, only: [:index, :show] do
       member do
         post :read
+        post :generate
+        get :state
       end
     end
 
@@ -75,7 +105,7 @@ namespace :api, format: false do
       end
     end
 
-    resources :media, only: [:create, :update, :show]
+    resources :media, only: [:create, :update, :show, :destroy]
     resources :blocks, only: [:index]
     resources :mutes, only: [:index]
     resources :favourites, only: [:index]
@@ -86,9 +116,11 @@ namespace :api, format: false do
     resources :endorsements, only: [:index]
     resources :markers, only: [:index, :create]
 
-    namespace :profile do
-      resource :avatar, only: :destroy
-      resource :header, only: :destroy
+    resource :profile, only: [:show, :update] do
+      scope module: :profile do
+        resource :avatar, only: :destroy
+        resource :header, only: :destroy
+      end
     end
 
     namespace :apps do
@@ -114,10 +146,13 @@ namespace :api, format: false do
         resources :rules, only: [:index]
         resources :domain_blocks, only: [:index]
         resource :privacy_policy, only: [:show]
+        resource :terms_of_service, only: [:show]
         resource :extended_description, only: [:show]
         resource :translation_languages, only: [:show]
         resource :languages, only: [:show]
         resource :activity, only: [:show], controller: :activity
+
+        get '/terms_of_service/:date', to: 'terms_of_services#show'
       end
     end
 
@@ -185,6 +220,7 @@ namespace :api, format: false do
         resources :lists, only: :index
         resources :identity_proofs, only: :index
         resources :featured_tags, only: :index
+        resources :endorsements, only: :index
       end
 
       member do
@@ -198,8 +234,10 @@ namespace :api, format: false do
       end
 
       scope module: :accounts do
-        resource :pin, only: :create
-        post :unpin, to: 'pins#destroy'
+        post :pin, to: 'endorsements#create'
+        post :endorse, to: 'endorsements#create'
+        post :unpin, to: 'endorsements#destroy'
+        post :unendorse, to: 'endorsements#destroy'
         resource :note, only: :create
       end
     end
@@ -208,6 +246,8 @@ namespace :api, format: false do
       member do
         post :follow
         post :unfollow
+        post :feature
+        post :unfeature
       end
     end
 
@@ -223,7 +263,7 @@ namespace :api, format: false do
 
     resources :featured_tags, only: [:index, :create, :destroy]
 
-    resources :polls, only: [:create, :show] do
+    resources :polls, only: [:show] do
       resources :votes, only: :create, module: :polls
     end
 
@@ -346,10 +386,6 @@ namespace :api, format: false do
   namespace :web do
     resource :settings, only: [:update]
     resources :embeds, only: [:show]
-    resources :push_subscriptions, only: [:create] do
-      member do
-        put :update
-      end
-    end
+    resources :push_subscriptions, only: [:create, :destroy, :update]
   end
 end

@@ -5,15 +5,15 @@
 # Table name: account_warnings
 #
 #  id                :bigint(8)        not null, primary key
-#  account_id        :bigint(8)
-#  target_account_id :bigint(8)
 #  action            :integer          default("none"), not null
+#  overruled_at      :datetime
+#  status_ids        :string           is an Array
 #  text              :text             default(""), not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  account_id        :bigint(8)
 #  report_id         :bigint(8)
-#  status_ids        :string           is an Array
-#  overruled_at      :datetime
+#  target_account_id :bigint(8)
 #
 
 class AccountWarning < ApplicationRecord
@@ -27,6 +27,7 @@ class AccountWarning < ApplicationRecord
     suspend: 4_000,
   }, suffix: :action
 
+  APPEAL_WINDOW = 20.days
   RECENT_PERIOD = 3.months.freeze
 
   normalizes :text, with: ->(text) { text.to_s }, apply_to_nil: true
@@ -47,6 +48,10 @@ class AccountWarning < ApplicationRecord
 
   def overruled?
     overruled_at.present?
+  end
+
+  def appeal_eligible?
+    created_at >= APPEAL_WINDOW.ago
   end
 
   def to_log_human_identifier

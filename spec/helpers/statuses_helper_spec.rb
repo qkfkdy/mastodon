@@ -24,16 +24,13 @@ RSpec.describe StatusesHelper do
   end
 
   describe '#media_summary' do
-    it 'describes the media on a status' do
-      status = Fabricate :status
-      Fabricate :media_attachment, status: status, type: :video
-      Fabricate :media_attachment, status: status, type: :audio
-      Fabricate :media_attachment, status: status, type: :image
+    subject { helper.media_summary(status) }
 
-      result = helper.media_summary(status)
+    let(:status) { Fabricate.build :status }
 
-      expect(result).to eq('Attached: 1 image · 1 video · 1 audio')
-    end
+    before { %i(video audio image).each { |type| Fabricate.build :media_attachment, status:, type: } }
+
+    it { is_expected.to eq('Attached: 1 image · 1 video · 1 audio') }
   end
 
   describe 'visibility_icon' do
@@ -76,29 +73,5 @@ RSpec.describe StatusesHelper do
         expect(result).to match('alternate_email')
       end
     end
-  end
-
-  describe '#stream_link_target' do
-    it 'returns nil if it is not an embedded view' do
-      set_not_embedded_view
-
-      expect(helper.stream_link_target).to be_nil
-    end
-
-    it 'returns _blank if it is an embedded view' do
-      set_embedded_view
-
-      expect(helper.stream_link_target).to eq '_blank'
-    end
-  end
-
-  def set_not_embedded_view
-    params[:controller] = "not_#{StatusesHelper::EMBEDDED_CONTROLLER}"
-    params[:action] = "not_#{StatusesHelper::EMBEDDED_ACTION}"
-  end
-
-  def set_embedded_view
-    params[:controller] = StatusesHelper::EMBEDDED_CONTROLLER
-    params[:action] = StatusesHelper::EMBEDDED_ACTION
   end
 end

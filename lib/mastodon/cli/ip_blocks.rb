@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'rubygems/package'
 require_relative 'base'
 
 module Mastodon::CLI
@@ -80,9 +79,9 @@ module Mastodon::CLI
         end
 
         ip_blocks = if options[:force]
-                      IpBlock.where('ip >>= ?', address)
+                      IpBlock.containing(address)
                     else
-                      IpBlock.where('ip <<= ?', address)
+                      IpBlock.contained_by(address)
                     end
 
         if ip_blocks.empty?
@@ -108,9 +107,9 @@ module Mastodon::CLI
       IpBlock.severity_no_access.find_each do |ip_block|
         case options[:format]
         when 'nginx'
-          say "deny #{ip_block.ip}/#{ip_block.ip.prefix};"
+          say "deny #{ip_block.to_cidr};"
         else
-          say "#{ip_block.ip}/#{ip_block.ip.prefix}"
+          say ip_block.to_cidr
         end
       end
     end

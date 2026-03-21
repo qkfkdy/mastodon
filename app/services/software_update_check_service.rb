@@ -12,7 +12,7 @@ class SoftwareUpdateCheckService < BaseService
 
   def clean_outdated_updates!
     SoftwareUpdate.find_each do |software_update|
-      software_update.delete if Mastodon::Version.gem_version >= software_update.gem_version
+      software_update.delete if software_update.outdated?
     rescue ArgumentError
       software_update.delete
     end
@@ -20,14 +20,14 @@ class SoftwareUpdateCheckService < BaseService
 
   def fetch_update_notices
     Request.new(:get, "#{api_url}?version=#{version}").add_headers('Accept' => 'application/json', 'User-Agent' => 'Mastodon update checker').perform do |res|
-      return Oj.load(res.body_with_limit, mode: :strict) if res.code == 200
+      return JSON.parse(res.body_with_limit) if res.code == 200
     end
-  rescue *Mastodon::HTTP_CONNECTION_ERRORS, Oj::ParseError
+  rescue *Mastodon::HTTP_CONNECTION_ERRORS, JSON::ParserError
     nil
   end
 
   def api_url
-    ENV.fetch('UPDATE_CHECK_URL', 'https://api.joinmastodon.org/update-check')
+    Rails.configuration.x.mastodon.software_update_url
   end
 
   def version

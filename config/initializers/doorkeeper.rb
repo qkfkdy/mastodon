@@ -52,6 +52,9 @@ Doorkeeper.configure do
   # Issue access tokens with refresh token (disabled by default)
   # use_refresh_token
 
+  # Proof of Key Code Exchange
+  pkce_code_challenge_methods ['S256']
+
   # Forbids creating/updating applications with arbitrary scopes that are
   # not in configuration, i.e. `default_scopes` or `optional_scopes`.
   # (Disabled by default)
@@ -72,6 +75,7 @@ Doorkeeper.configure do
                   :'write:accounts',
                   :'write:blocks',
                   :'write:bookmarks',
+                  :'write:collections',
                   :'write:conversations',
                   :'write:favourites',
                   :'write:filters',
@@ -86,6 +90,7 @@ Doorkeeper.configure do
                   :'read:accounts',
                   :'read:blocks',
                   :'read:bookmarks',
+                  :'read:collections',
                   :'read:favourites',
                   :'read:filters',
                   :'read:follows',

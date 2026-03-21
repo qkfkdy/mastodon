@@ -8,15 +8,17 @@ RSpec.describe Admin::AccountAction do
   describe '#save!' do
     subject              { account_action.save! }
 
-    let(:account)        { Fabricate(:user, role: UserRole.find_by(name: 'Admin')).account }
+    let(:account)        { Fabricate(:admin_user).account }
     let(:target_account) { Fabricate(:account) }
     let(:type)           { 'disable' }
+    let(:text)           { nil }
 
     before do
       account_action.assign_attributes(
         type: type,
         current_account: account,
-        target_account: target_account
+        target_account: target_account,
+        text:
       )
     end
 
@@ -50,6 +52,20 @@ RSpec.describe Admin::AccountAction do
         expect do
           subject
         end.to change { Admin::SuspensionWorker.jobs.size }.by 1
+      end
+    end
+
+    context 'when type is `none`' do
+      let(:type) { 'none' }
+
+      context 'when a custom text is given' do
+        let(:text) { 'custom' }
+
+        it 'logs the action' do
+          expect { subject }.to change(Admin::ActionLog, :count).by(1)
+
+          expect(Admin::ActionLog.last.target.text).to eq 'custom'
+        end
       end
     end
 

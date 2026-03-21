@@ -10,8 +10,10 @@
     ENV[key] = SecureRandom.hex(64)
   end
 
-  value = ENV.fetch(key) do
-    abort <<~MESSAGE
+  value = ENV.fetch(key, '')
+
+  if value.blank?
+    abort <<~MESSAGE # rubocop:disable Rails/Exit
 
       Mastodon now requires that these variables are set:
 
@@ -20,12 +22,13 @@
         - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY
 
       Run `bin/rails db:encryption:init` to generate new secrets and then assign the environment variables.
+      Do not change the secrets once they are set, as doing so may cause data loss and other issues that will be difficult or impossible to recover from.
     MESSAGE
   end
 
   next unless Rails.env.production? && value.end_with?('DO_NOT_USE_IN_PRODUCTION')
 
-  abort <<~MESSAGE
+  abort <<~MESSAGE # rubocop:disable Rails/Exit
 
     It looks like you are trying to run Mastodon in production with a #{key} value from the test environment.
 

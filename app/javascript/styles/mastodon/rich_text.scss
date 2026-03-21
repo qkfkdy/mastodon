@@ -2,6 +2,26 @@
 .e-content,
 .edit-indicator__content,
 .reply-indicator__content {
+  code {
+    background: var(--rich-text-container-color);
+    padding: 4px;
+    border-radius: 4px;
+    color: var(--rich-text-text-color);
+    font-size: 0.85em;
+  }
+
+  pre {
+    background: var(--rich-text-container-color);
+    padding: 8px;
+    border-radius: 4px;
+    color: var(--rich-text-text-color);
+
+    code {
+      padding: 0;
+      background: transparent;
+    }
+  }
+
   pre,
   blockquote {
     margin-bottom: 0px;
@@ -18,15 +38,42 @@
     border-inline-start: 3px solid $point;
     color: $point;
     white-space: normal;
+    position: relative;
 
-    p:last-child {
+    &::before {
+      display: block;
+      content: '';
+      width: 24px;
+      height: 20px;
+      mask-image: url('@/images/quote.svg');
+      background-color: var(--rich-text-decorations-color);
+      position: absolute;
+      inset-inline-start: 0;
+      top: 0;
+    }
+
+    blockquote {
+      margin-top: 4px;
+      border-inline-start: 3px solid var(--rich-text-decorations-color);
+      padding-inline-start: 16px;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    p:last-of-type {
       margin-bottom: 0;
     }
   }
 
   & > ul,
   & > ol {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   b,
@@ -52,7 +99,15 @@
 
   ul,
   ol {
-    margin-inline-start: 2em;
+    padding-inline-start: 24px;
+
+    li {
+      padding-inline-start: 8px;
+
+      &::marker {
+        text-align: end;
+      }
+    }
 
     p {
       margin: 0;
@@ -60,7 +115,11 @@
   }
 
   ul {
-    list-style-type: disc;
+    list-style-type: '•';
+
+    li::marker {
+      text-align: start;
+    }
   }
 
   ol {

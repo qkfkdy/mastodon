@@ -60,6 +60,7 @@ sl:
       error:
         title: Prišlo je do napake
       new:
+        prompt_html: "%{client_name} želi dostopati do vašega računa. <strong>To prošnjo odobrite le, če tega odjemalca prepoznate in mu zaupate.</strong>"
         review_permissions: Preglej dovoljenja
         title: Potrebna je odobritev
       show:

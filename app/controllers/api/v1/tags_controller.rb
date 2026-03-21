@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::TagsController < Api::BaseController
-  before_action -> { doorkeeper_authorize! :follow, :write, :'write:follows' }, except: :show
+  before_action -> { doorkeeper_authorize! :follow, :write, :'write:follows' }, only: [:follow, :unfollow]
+  before_action -> { doorkeeper_authorize! :write, :'write:accounts' }, only: [:feature, :unfeature]
   before_action :require_user!, except: :show
   before_action :set_or_create_tag
 
@@ -23,11 +24,21 @@ class Api::V1::TagsController < Api::BaseController
     render json: @tag, serializer: REST::TagSerializer
   end
 
+  def feature
+    CreateFeaturedTagService.new.call(current_account, @tag)
+    render json: @tag, serializer: REST::TagSerializer
+  end
+
+  def unfeature
+    RemoveFeaturedTagService.new.call(current_account, @tag)
+    render json: @tag, serializer: REST::TagSerializer
+  end
+
   private
 
   def set_or_create_tag
     return not_found unless Tag::HASHTAG_NAME_RE.match?(params[:id])
 
-    @tag = Tag.find_normalized(params[:id]) || Tag.new(name: Tag.normalize(params[:id]), display_name: params[:id])
+    @tag = Tag.find_normalized(params[:id]) || Tag.new(name: params[:id], display_name: params[:id])
   end
 end

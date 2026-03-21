@@ -2,7 +2,7 @@
 
 ENV['RAILS_ENV'] ||= 'test'
 
-unless ENV['DISABLE_SIMPLECOV'] == 'true'
+if ENV.fetch('COVERAGE', false)
   require 'simplecov'
 
   SimpleCov.start 'rails' do
@@ -30,9 +30,10 @@ end
 
 # This needs to be defined before Rails is initialized
 STREAMING_PORT = ENV.fetch('TEST_STREAMING_PORT', '4020')
-ENV['STREAMING_API_BASE_URL'] = "http://localhost:#{STREAMING_PORT}"
+STREAMING_HOST = ENV.fetch('TEST_STREAMING_HOST', 'localhost')
+ENV['STREAMING_API_BASE_URL'] = "http://#{STREAMING_HOST}:#{STREAMING_PORT}"
 
-require File.expand_path('../config/environment', __dir__)
+require_relative '../config/environment'
 
 abort('The Rails environment is running in production mode!') if Rails.env.production?
 
@@ -42,7 +43,7 @@ require 'webmock/rspec'
 require 'paperclip/matchers'
 require 'capybara/rspec'
 require 'chewy/rspec'
-require 'email_spec/rspec'
+require 'pundit/rspec'
 require 'test_prof/recipes/rspec/before_all'
 
 Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
@@ -52,11 +53,9 @@ WebMock.disable_net_connect!(
   allow_localhost: true,
   allow: Chewy.settings[:host]
 )
-Sidekiq.logger = nil
+Sidekiq.default_configuration.logger = nil
 
 DatabaseCleaner.strategy = [:deletion]
-
-Chewy.settings[:enabled] = false
 
 Devise::Test::ControllerHelpers.module_eval do
   alias_method :original_sign_in, :sign_in
@@ -112,10 +111,17 @@ RSpec.configure do |config|
   config.include ActiveSupport::Testing::TimeHelpers
   config.include Chewy::Rspec::Helpers
   config.include Redisable
+  config.include DomainHelpers
   config.include ThreadingHelpers
   config.include SignedRequestHelpers, type: :request
   config.include CommandLineHelpers, type: :cli
   config.include SystemHelpers, type: :system
+  config.include Shoulda::Matchers::ActiveModel, type: :validator
+
+  # TODO: Remove when Devise fixes https://github.com/heartcombo/devise/issues/5705
+  config.before do
+    Rails.application.reload_routes_unless_loaded
+  end
 
   config.around(:each, use_transactional_tests: false) do |example|
     self.use_transactional_tests = false
@@ -130,12 +136,6 @@ RSpec.configure do |config|
       Sidekiq::Testing.fake!
     end
     example.run
-  end
-
-  config.around(:each, type: :search) do |example|
-    Chewy.settings[:enabled] = true
-    example.run
-    Chewy.settings[:enabled] = false
   end
 
   config.before :each, type: :cli do

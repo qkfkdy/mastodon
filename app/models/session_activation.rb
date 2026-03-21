@@ -5,12 +5,12 @@
 # Table name: session_activations
 #
 #  id                       :bigint(8)        not null, primary key
-#  session_id               :string           not null
+#  ip                       :inet
+#  user_agent               :string           default(""), not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  user_agent               :string           default(""), not null
-#  ip                       :inet
 #  access_token_id          :bigint(8)
+#  session_id               :string           not null
 #  user_id                  :bigint(8)        not null
 #  web_push_subscription_id :bigint(8)
 #
@@ -30,15 +30,15 @@ class SessionActivation < ApplicationRecord
 
   DEFAULT_SCOPES = %w(read write follow).freeze
 
+  scope :latest, -> { order(id: :desc) }
+
   class << self
     def active?(id)
       id && exists?(session_id: id)
     end
 
-    def activate(**options)
-      activation = create!(**options)
-      purge_old
-      activation
+    def activate(**)
+      create!(**).tap { purge_old }
     end
 
     def deactivate(id)
@@ -48,7 +48,7 @@ class SessionActivation < ApplicationRecord
     end
 
     def purge_old
-      order('created_at desc').offset(Rails.configuration.x.max_session_activations).destroy_all
+      latest.offset(Rails.configuration.x.max_session_activations).destroy_all
     end
 
     def exclusive(id)

@@ -8,6 +8,14 @@ class AnnualReport::Source
     @year = year
   end
 
+  def generate
+    raise NotImplementedError
+  end
+
+  def eligible?
+    true
+  end
+
   protected
 
   def report_statuses

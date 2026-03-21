@@ -40,7 +40,7 @@ RSpec.describe ActivityPub::FetchRepliesService do
         it 'queues the expected worker' do
           allow(FetchReplyWorker).to receive(:push_bulk)
 
-          subject.call(status, payload)
+          subject.call(status.account.uri, payload)
 
           expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1'])
         end
@@ -50,7 +50,7 @@ RSpec.describe ActivityPub::FetchRepliesService do
         it 'spawns workers for up to 5 replies on the same server' do
           allow(FetchReplyWorker).to receive(:push_bulk)
 
-          subject.call(status, payload)
+          subject.call(status.account.uri, payload)
 
           expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
@@ -58,13 +58,13 @@ RSpec.describe ActivityPub::FetchRepliesService do
 
       context 'when passing the URL to the collection' do
         before do
-          stub_request(:get, collection_uri).to_return(status: 200, body: Oj.dump(payload), headers: { 'Content-Type': 'application/activity+json' })
+          stub_request(:get, collection_uri).to_return(status: 200, body: payload.to_json, headers: { 'Content-Type': 'application/activity+json' })
         end
 
         it 'spawns workers for up to 5 replies on the same server' do
           allow(FetchReplyWorker).to receive(:push_bulk)
 
-          subject.call(status, collection_uri)
+          subject.call(status.account.uri, collection_uri)
 
           expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
@@ -85,7 +85,7 @@ RSpec.describe ActivityPub::FetchRepliesService do
         it 'spawns workers for up to 5 replies on the same server' do
           allow(FetchReplyWorker).to receive(:push_bulk)
 
-          subject.call(status, payload)
+          subject.call(status.account.uri, payload)
 
           expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
@@ -93,13 +93,13 @@ RSpec.describe ActivityPub::FetchRepliesService do
 
       context 'when passing the URL to the collection' do
         before do
-          stub_request(:get, collection_uri).to_return(status: 200, body: Oj.dump(payload), headers: { 'Content-Type': 'application/activity+json' })
+          stub_request(:get, collection_uri).to_return(status: 200, body: payload.to_json, headers: { 'Content-Type': 'application/activity+json' })
         end
 
         it 'spawns workers for up to 5 replies on the same server' do
           allow(FetchReplyWorker).to receive(:push_bulk)
 
-          subject.call(status, collection_uri)
+          subject.call(status.account.uri, collection_uri)
 
           expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
@@ -124,7 +124,7 @@ RSpec.describe ActivityPub::FetchRepliesService do
         it 'spawns workers for up to 5 replies on the same server' do
           allow(FetchReplyWorker).to receive(:push_bulk)
 
-          subject.call(status, payload)
+          subject.call(status.account.uri, payload)
 
           expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end
@@ -132,13 +132,13 @@ RSpec.describe ActivityPub::FetchRepliesService do
 
       context 'when passing the URL to the collection' do
         before do
-          stub_request(:get, collection_uri).to_return(status: 200, body: Oj.dump(payload), headers: { 'Content-Type': 'application/activity+json' })
+          stub_request(:get, collection_uri).to_return(status: 200, body: payload.to_json, headers: { 'Content-Type': 'application/activity+json' })
         end
 
         it 'spawns workers for up to 5 replies on the same server' do
           allow(FetchReplyWorker).to receive(:push_bulk)
 
-          subject.call(status, collection_uri)
+          subject.call(status.account.uri, collection_uri)
 
           expect(FetchReplyWorker).to have_received(:push_bulk).with(['http://example.com/self-reply-1', 'http://example.com/self-reply-2', 'http://example.com/self-reply-3', 'http://example.com/self-reply-4', 'http://example.com/self-reply-5'])
         end

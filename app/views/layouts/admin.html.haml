@@ -1,7 +1,7 @@
 - content_for :header_tags do
   = render_initial_state
-  = javascript_pack_tag 'public', crossorigin: 'anonymous'
-  = javascript_pack_tag 'admin', async: true, crossorigin: 'anonymous'
+  = vite_typescript_tag 'public.tsx', crossorigin: 'anonymous'
+  = vite_typescript_tag 'admin.tsx', crossorigin: 'anonymous'
 
 - content_for :body_classes, 'admin'
 
@@ -31,7 +31,7 @@
             = yield :heading
           - else
             .content__heading__row
-              %h2= yield :page_title
+              %h1= yield :page_title
 
               - if content_for?(:heading_actions)
                 .content__heading__actions

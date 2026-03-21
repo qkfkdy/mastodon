@@ -19,28 +19,20 @@ RSpec.describe 'Share page', :js, :streaming do
       .to have_css('.modal-layout__mastodon')
       .and have_css('div#mastodon-compose')
       .and have_css('.compose-form__submit')
+    expect(find_by_id('mastodon-compose')['data-props'])
+      .to eq('{"locale":"en"}')
 
     fill_in_form
 
     expect(page)
-      .to have_css('.notification-bar-message', text: translations['compose.published.body'])
+      .to have_current_path(%r{/@bob/[0-9]+})
   end
 
   def fill_in_form
     within('.compose-form') do
-      fill_in translations['compose_form.placeholder'],
+      fill_in frontend_translations('compose_form.placeholder'),
               with: 'This is a new status!'
-      click_on translations['compose_form.publish']
+      click_on frontend_translations('compose_form.publish')
     end
-  end
-
-  def translations
-    # TODO: Extract to system spec helper for re-use?
-    JSON.parse(
-      Rails
-        .root
-        .join('app', 'javascript', 'mastodon', 'locales', 'en.json')
-        .read
-    )
   end
 end

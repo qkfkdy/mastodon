@@ -11,7 +11,6 @@ ro:
       few: Urmăritori
       one: Urmăritor
       other: De Urmăritori
-    following: Urmăriți
     instance_actor_flash: Acest cont este un actor virtual folosit pentru a reprezenta serverul în sine și nu un utilizator individual. Acesta este utilizat în scopuri federative şi nu trebuie suspendat.
     last_active: ultima activitate
     link_verified_on: Proprietatea acestui link a fost verificată la %{date}
@@ -23,6 +22,7 @@ ro:
       one: Postare
       other: De Postări
     posts_tab_heading: Postări
+    self_follow_error: Urmărirea propriului cont nu este permisă
   admin:
     account_actions:
       action: Efectuează acțiunea
@@ -384,7 +384,6 @@ ro:
       resolved_msg: Raportare rezolvată cu succes!
       skip_to_actions: Treci la acțiuni
       status: Stare
-      statuses: Conținut raportat
       statuses_description_html: Conținutul problematic va fi citat în comunicarea trimisă contului raportat
       target_origin: Originea contului raportat
       title: Raportări
@@ -653,7 +652,6 @@ ro:
   scheduled_statuses:
     over_daily_limit: Ai depășit limita de %{limit} postări programate pentru acea zi
     over_total_limit: Ai depășit limita de %{limit} postări programate
-    too_soon: Data programată trebuie să fie în viitor
   sessions:
     activity: Ultima activitate
     browser: Navigator
@@ -685,20 +683,10 @@ ro:
       limit: Deja ai fixat numărul maxim de postări
       ownership: Postarea altcuiva nu poate fi fixată
       reblog: Un impuls nu poate fi fixat
-    visibilities:
-      private: Doar urmăritorii
-      private_long: Arată doar urmăritorilor
-      public_long: Toată lumea poate vedea
-      unlisted: Nelistat
-      unlisted_long: Toată lumea poate vedea, dar nu este listată pe fluxurile publice
   stream_entries:
     sensitive_content: Conținut sensibil
   tags:
     does_not_match_previous_name: nu se potrivește cu numele anterior
-  themes:
-    contrast: Mastodon (contrast mare)
-    default: Mastodon (Întunecat)
-    mastodon-light: Mastodon (Luminat)
   time:
     formats:
       default: "%d %m, %Y, %H:%M"
